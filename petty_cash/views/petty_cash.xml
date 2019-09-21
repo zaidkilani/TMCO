@@ -3,8 +3,8 @@
 	<data>
 
 
-		<record model="ir.ui.view" id="view_start_petty_cash_tree">
-			<field name="name">Start Petty Cash</field>
+		<record model="ir.ui.view" id="view_main_petty_cash_tree">
+			<field name="name">Main Petty Cash</field>
 			<field name="model">petty.cash</field>
 			<field name="arch" type="xml">
 				<tree>
@@ -12,15 +12,14 @@
 					<field name="start_date" />
 					<field name="resposible_id" />
 					<field name="Treasurer_id" />
-					<field name="allowed_expenses" />
 				</tree>
 			</field>
 
 		</record>
 
 
-		<record model="ir.ui.view" id="view_start_petty_cash_form">
-			<field name="name">Start Petty Cash</field>
+		<record model="ir.ui.view" id="view_main_petty_cash_form">
+			<field name="name">Main Petty Cash</field>
 			<field name="model">petty.cash</field>
 			<field name="arch" type="xml">
 				<form>
@@ -71,34 +70,36 @@
 
 						<group>
 							<group>
-								<field name="name" />
-								<field name="resposible_id" />
-								<field name="Treasurer_id" />
-								<field name="allowed_expenses" widget="many2many_tags"/>
+								<field name="name" readonly="1"/>
+								<field name="resposible_id" readonly="1"/>
+								<field name="Treasurer_id" readonly="1"/>
 							</group>
 							<group>
-								<field name="start_date" />
-								<field name="expected_date" />
+								<field name="start_date" readonly="1"/>
+								<field name="expected_date" readonly="1"/>
+								<field name="amount" string="Opening Balance" readonly="1"/>
 							</group>
 						</group>
-						<notebook>
-						  <page string="Opening Balance">
-						      <group>
-						          <group>
-    					              <field name="currency_id" />
-                                      <field name="amount" />
-                                      <field name="opening_date" />
-						          </group>
-						          <group>
-                                      <field name="type" />
-                                      <field name="chque_no"
-                                            attrs="{'invisible': [('type', 'not in',['chque'])]}"/>
-                                      <field name="bank_id" 
-                                            attrs="{'invisible': [('type', 'not in',['chque'])]}"/>
-                                  </group>
-						      </group>
-						  </page>
-						</notebook>
+						<label for="petty_cash_line_ids" style="font-weight: bold" />
+                        <field name="petty_cash_line_ids">
+                            <tree editable='button'>
+                                <field name="product_id" />
+                                <field name="analytic_account" />
+                                <field name="attachment" />
+                                <field name="date_time" />
+                                <field name="allowed_expenses_ids" widget="many2many_tags" 
+                                        domain="[('id','in',allowed_expenses_ids_com)]"
+                                         />
+                                <field name="allowed_expenses_ids_com" 
+                                        widget="many2many_tags" invisible="1"/>
+                                <field name="cost" />
+                            </tree>
+                        </field>
+                        <group>
+                            <group>
+                            <field name='remain_balance' readonly="1"/>
+                            </group>
+                        </group>
 					</sheet>
 				<div class="oe_chatter">
                         <field name="message_follower_ids" widget="mail_followers"/>
@@ -110,28 +111,27 @@
 		</record>
 
 
-		<record id="start_petty_cash_action" model="ir.actions.act_window">
-			<field name="name">Start Petty Cash</field>
+		<record id="main_petty_cash_action" model="ir.actions.act_window">
+			<field name="name">Main Petty Cash</field>
 			<field name="res_model">petty.cash</field>
 			<field name="view_type">form</field>
 			<field name="view_mode">tree,form</field>
 		</record>
-		<record id="action_start_petty_cash_tree" model="ir.actions.act_window.view">
+
+        <record id="action_main_petty_cash_tree" model="ir.actions.act_window.view">
             <field eval="1" name="sequence"/> 
-            <field name="act_window_id" ref="start_petty_cash_action" />
-            <field name="view_id" ref="view_start_petty_cash_tree" />
+            <field name="act_window_id" ref="main_petty_cash_action" />
+            <field name="view_id" ref="view_main_petty_cash_tree" />
             <field name="view_mode">tree</field>
         </record>
-        <record id="action_start_petty_cash_form" model="ir.actions.act_window.view">
+        <record id="action_main_petty_cash_form" model="ir.actions.act_window.view">
             <field eval="2" name="sequence"/> 
-            <field name="act_window_id" ref="start_petty_cash_action"/>
-            <field name="view_id" ref="view_start_petty_cash_form" />
+            <field name="act_window_id" ref="main_petty_cash_action"/>
+            <field name="view_id" ref="view_main_petty_cash_form" />
             <field name="view_mode">form</field>
         </record>
-        
-		<menuitem id="menu_petty_cash_management" name="Petty Cash" web_icon="petty_cash,static/src/img/icon.png"/> 
-        <menuitem id="menu_petty_cash_bar" name="Petty Cash" parent="menu_petty_cash_management" sequence="2"/>
-        <menuitem id="menu_start_petty_cash" action="start_petty_cash_action" parent="menu_petty_cash_bar" sequence="1"/>
+        <menuitem id="menu_main_petty_cash_bar" name="Operations" parent="menu_petty_cash_management" sequence="1"/>
+        <menuitem id="menu_main_petty_cash" action="main_petty_cash_action" parent="menu_main_petty_cash_bar" sequence="1"/>
 
 
 	</data>

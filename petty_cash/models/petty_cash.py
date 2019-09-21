@@ -24,6 +24,9 @@ class PettyCash(models.Model):
                           ('chque','Chque')], string='Type')
     chque_no=fields.Integer('Chque No')
     bank_id=fields.Many2one('res.partner.bank', string='Bank')
+    remain_balance = fields.Monetary('Remaining Balance', compute='_calculate_remaining_balance')
+#   ids
+    petty_cash_line_ids=fields.One2many('petty.cash.line', 'petty_cash_id')  
     
     @api.model
     def create(self, values):
@@ -31,6 +34,10 @@ class PettyCash(models.Model):
         for val in res:
             val['name'] = self.env['ir.sequence'].next_by_code('petty.seq')
         return res
+    @api.depends('amount')
+    def _calculate_remaining_balance(self):
+        for rec in self:
+            rec.remain_balance=rec.amount-sum(rec.petty_cash_line_ids.mapped('cost'))
     
 class PettyCashType(models.Model):
     _name='petty.cash.type'
@@ -38,19 +45,16 @@ class PettyCashType(models.Model):
     
     name=fields.Char('Name')
     
-#     @api.model
-#     def create(self, values):
-#         res = super(Job, self).create(values)
-#         for val in res:
-#             val['name'] = self.env['ir.sequence'].next_by_code('job.seq')
-#         for rec in res:
-#             if not rec.analytic_account:
-#                 rec.ensure_one()
-#                 rec.analytic_account.create({'name':rec.name,
-#                                              'code':rec.name})
-#                 ana_acct_obj = rec.env['account.analytic.account'].search([('name','=',rec.name)])
-#                 rec.write({'analytic_account':ana_acct_obj.id})
-#                 rec.message_post(body="Analytic account has been added")
-#             else:
-#                 raise UserError("This 'Job' is already assigned to an 'Analytic account'.")
-#         return res
+class PettyCashLine(models.Model):
+    _name='petty.cash.line'
+    _description='Petty Cash Line Model'
+    
+    product_id = fields.Many2one('product.product', required=True)
+    petty_cash_id=fields.Many2one('petty.cash')
+    analytic_account = fields.Many2one('account.analytic.account', string='Analytical Account')
+    attachment=fields.Binary('Attachment')
+    date_time=fields.Datetime('Date')
+    allowed_expenses_ids=fields.Many2many('petty.cash.type', string='Type')
+    allowed_expenses_ids_com=fields.Many2many('petty.cash.type', related='petty_cash_id.allowed_expenses')
+    cost=fields.Float()
+    

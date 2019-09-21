@@ -20,7 +20,7 @@
     'data': [
         'security/ir.model.access.csv',
         'views/start_petty.xml',
-#        'views/container_size_view.xml',
+        'views/petty_cash.xml',
 #        'views/agreement_method_view.xml',
 #        'views/custoemr_class_view.xml',
 # #        'report/sale_report.xml',
