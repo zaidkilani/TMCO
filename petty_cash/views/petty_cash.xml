@@ -7,11 +7,13 @@
 			<field name="name">Main Petty Cash</field>
 			<field name="model">petty.cash</field>
 			<field name="arch" type="xml">
-				<tree>
+				<tree create="0" delete="0">
 					<field name="name" />
-					<field name="start_date" />
+					<field name="amount" string="Opening Balance"/>
 					<field name="resposible_id" />
-					<field name="Treasurer_id" />
+					<field name="start_date" />
+					<field name="currency_id"/>
+					<field name="remain_balance" string="Balance"/>
 				</tree>
 			</field>
 
@@ -22,79 +24,47 @@
 			<field name="name">Main Petty Cash</field>
 			<field name="model">petty.cash</field>
 			<field name="arch" type="xml">
-				<form>
-				    <!-- <header>
-				           <button name="approve_sale_mgr" type="object" 
-				                   string="Sale Manager Approval" class="oe_highlight" states="New"
-				                   confirm="Are you sure you want to 'Approve' this Sale Inquiry?"/>
-                           <button name="approve_acct_mgr" type="object" 
-                                   string="Account Manger Approval" class="oe_highlight" states="Progress" 
-                                   confirm="Are you sure you want to 'Approve' this Sale Inquiry?"/>
-                           <button name="approve_gm" type="object" 
-                                   string="General Manger Approval" class="oe_highlight" states="Confirmed" 
-                                   confirm="Are you sure you want to 'Approve' this Sale Inquiry AND 'Create' Job?"/>
-                           <button name="cancel_gm" type="object" string="Cancel" class="oe_highlight" states="Confirmed" 
-                                   confirm="Are you sure you want to 'Cancel' this Sale Inquiry?"/>
-                           <button name="set_new_gm" type="object" string="Set to New" class="oe_highlight" states="Cancelled"  -->
-                                   <!-- confirm="Are you sure you want to ' Set To New ' this Sale Inquiry?"/> -->
-                           <!-- <button name="action_send_email" type="object" string="Send E-mail" class="oe_highlight" /> -->
-                           <!-- <field name="stage" widget="statusbar" statusbar_visible="New,Progress,Confirmed,Cancelled,Job" /> -->
-                    <!-- </header> -->
+				<form create="0" delete="0">
 					<sheet>
-
-                       <!-- <div class="oe_button_box" name="button_box">  
-                            <button name="call_job" type="object"  
-                            class="oe_stat_button" icon="fa-list-alt" string="Job">   -->
-                                 <!-- (If you want to display the count)<field name="field_name_for_count" widget="statinfo"   
-                            string="You String Name" />   -->
-                           <!-- </button>  -->
-                           <!-- <button name="call_sale" type="object"  
-                            class="oe_stat_button" icon="fa-pencil-square-o" string="Sale Order">  
-                                 (If you want to display the count)<field name="field_name_for_count" widget="statinfo"   
-                            string="You String Name" />  
-                           </button> 
-                           <button name="call_purchase" type="object"  
-                            class="oe_stat_button" icon="fa-pencil-square-o" string="Purchase Order">  
-                                 (If you want to display the count)<field name="field_name_for_count" widget="statinfo"   
-                            string="You String Name" />  
-                           </button> 
-                           <button name="call_invoice" type="object"  
-                            class="oe_stat_button" icon="fa-pencil-square-o" string="Invoices">  
-                                 (If you want to display the count)<field name="field_name_for_count" widget="statinfo"   
-                            string="You String Name" />  
-                           </button>  -->
-                           <!-- <button name="create_job" type="object"  
-                            class="oe_stat_button" icon="fa-pencil-square-o" string="Create Job">  
-                           </button>  -->
-                       <!-- </div> -->
-
 						<group>
 							<group>
-								<field name="name" readonly="1"/>
-								<field name="resposible_id" readonly="1"/>
-								<field name="Treasurer_id" readonly="1"/>
+								<field name="name" readonly="1"
+								    options="{'no_create_edit': True, 'no_create': True, 'no_open': True}"/>
+								<field name="resposible_id" readonly="1"
+								    options="{'no_create_edit': True, 'no_create': True, 'no_open': True}"/>
+								<field name="Treasurer_id" readonly="1" 
+								    options="{'no_create_edit': True, 'no_create': True, 'no_open': True}"/>
 							</group>
 							<group>
 								<field name="start_date" readonly="1"/>
 								<field name="expected_date" readonly="1"/>
+								<field name="currency_id" readonly="1" 
+								    options="{'no_create_edit': True, 'no_create': True, 'no_open': True}"/>
 								<field name="amount" string="Opening Balance" readonly="1"/>
 							</group>
 						</group>
-						<label for="petty_cash_line_ids" style="font-weight: bold" />
-                        <field name="petty_cash_line_ids">
+						<notebook>
+						<page string="Expenses">
+                        <field name="petty_cash_line_ids" nolabel="1">
                             <tree editable='button'>
-                                <field name="product_id" />
-                                <field name="analytic_account" />
+                                <field name="product_id" 
+                                    options="{'no_create_edit': True, 'no_create': True, 'no_open': True}"
+                                    string="Expense Type"/>
+                                <field name="analytic_account" 
+                                    options="{'no_create_edit': True, 'no_create': True, 'no_open': True}"/>
                                 <field name="attachment" />
+                                <field name="bill_no"/>
                                 <field name="date_time" />
                                 <field name="allowed_expenses_ids" widget="many2many_tags" 
                                         domain="[('id','in',allowed_expenses_ids_com)]"
-                                         />
+                                        options="{'no_create_edit': True, 'no_create': True, 'no_open': True}"/>
                                 <field name="allowed_expenses_ids_com" 
                                         widget="many2many_tags" invisible="1"/>
                                 <field name="cost" />
                             </tree>
                         </field>
+                        </page>
+                        </notebook>
                         <group>
                             <group>
                             <field name='remain_balance' readonly="1"/>

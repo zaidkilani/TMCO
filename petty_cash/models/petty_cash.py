@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, api
-from datetime import datetime
 
 class PettyCash(models.Model):
     _name='petty.cash'
@@ -9,8 +8,8 @@ class PettyCash(models.Model):
     _description='Petty Cash Management'
     
     name = fields.Char(readonly=True)
-    start_date = fields.Datetime(string='Start Date', default=datetime.today())
-    expected_date = fields.Datetime(string='Expected Date') 
+    start_date = fields.Date(string='Start Date', default=fields.Date.today())
+    expected_date = fields.Date(string='Expected Date') 
     resposible_id=fields.Many2one('res.users', string='Responsible User')
     Treasurer_id=fields.Many2one('res.users', string='Treasurer', default=lambda self: self.env.user)
     allowed_expenses=fields.Many2many('petty.cash.type', string='Type')
@@ -41,10 +40,11 @@ class PettyCash(models.Model):
     
 class PettyCashType(models.Model):
     _name='petty.cash.type'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
     _description='Petty Cash Type'
     
     name=fields.Char('Name')
-    
+    active=fields.Boolean(default=True)
 class PettyCashLine(models.Model):
     _name='petty.cash.line'
     _description='Petty Cash Line Model'
@@ -53,8 +53,14 @@ class PettyCashLine(models.Model):
     petty_cash_id=fields.Many2one('petty.cash')
     analytic_account = fields.Many2one('account.analytic.account', string='Analytical Account')
     attachment=fields.Binary('Attachment')
-    date_time=fields.Datetime('Date')
+    date_time=fields.Date('Date')
     allowed_expenses_ids=fields.Many2many('petty.cash.type', string='Type')
     allowed_expenses_ids_com=fields.Many2many('petty.cash.type', related='petty_cash_id.allowed_expenses')
     cost=fields.Float()
+    bill_no=fields.Char('Bill No.')
+    
+    
+    
+    
+    
     
