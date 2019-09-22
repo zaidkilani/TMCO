@@ -5,10 +5,11 @@
 
 		<record model="ir.ui.view" id="view_job_tree">
 			<field name="name">job</field>
-			<field name="model">job</field>
+			<field name="model">manage.job</field>
 			<field name="arch" type="xml">
 				<tree>
 					<field name="name" />
+					<field name="description" />
 					<field name="start_date" />
 					<field name="delivery_date" />
 					<field name="sale_order_id" />
@@ -21,58 +22,16 @@
 
 		<record model="ir.ui.view" id="view_job_form">
 			<field name="name">Job</field>
-			<field name="model">job</field>
+			<field name="model">manage.job</field>
 			<field name="arch" type="xml">
 				<form>
-				    <!-- <header>
-				           <button name="approve_sale_mgr" type="object" 
-				                   string="Sale Manager Approval" class="oe_highlight" states="New"
-				                   confirm="Are you sure you want to 'Approve' this Sale Inquiry?"/>
-                           <button name="approve_acct_mgr" type="object" 
-                                   string="Account Manger Approval" class="oe_highlight" states="Progress" 
-                                   confirm="Are you sure you want to 'Approve' this Sale Inquiry?"/>
-                           <button name="approve_gm" type="object" 
-                                   string="General Manger Approval" class="oe_highlight" states="Confirmed" 
-                                   confirm="Are you sure you want to 'Approve' this Sale Inquiry AND 'Create' Job?"/>
-                           <button name="cancel_gm" type="object" string="Cancel" class="oe_highlight" states="Confirmed" 
-                                   confirm="Are you sure you want to 'Cancel' this Sale Inquiry?"/>
-                           <button name="set_new_gm" type="object" string="Set to New" class="oe_highlight" states="Cancelled"  -->
-                                   <!-- confirm="Are you sure you want to ' Set To New ' this Sale Inquiry?"/> -->
-                           <!-- <button name="action_send_email" type="object" string="Send E-mail" class="oe_highlight" /> -->
-                           <!-- <field name="stage" widget="statusbar" statusbar_visible="New,Progress,Confirmed,Cancelled,Job" /> -->
-                    <!-- </header> -->
 					<sheet>
-
-                       <!-- <div class="oe_button_box" name="button_box">  
-                            <button name="call_job" type="object"  
-                            class="oe_stat_button" icon="fa-list-alt" string="Job">   -->
-                                 <!-- (If you want to display the count)<field name="field_name_for_count" widget="statinfo"   
-                            string="You String Name" />   -->
-                           <!-- </button>  -->
-                           <!-- <button name="call_sale" type="object"  
-                            class="oe_stat_button" icon="fa-pencil-square-o" string="Sale Order">  
-                                 (If you want to display the count)<field name="field_name_for_count" widget="statinfo"   
-                            string="You String Name" />  
-                           </button> 
-                           <button name="call_purchase" type="object"  
-                            class="oe_stat_button" icon="fa-pencil-square-o" string="Purchase Order">  
-                                 (If you want to display the count)<field name="field_name_for_count" widget="statinfo"   
-                            string="You String Name" />  
-                           </button> 
-                           <button name="call_invoice" type="object"  
-                            class="oe_stat_button" icon="fa-pencil-square-o" string="Invoices">  
-                                 (If you want to display the count)<field name="field_name_for_count" widget="statinfo"   
-                            string="You String Name" />  
-                           </button>  -->
-                           <!-- <button name="create_job" type="object"  
-                            class="oe_stat_button" icon="fa-pencil-square-o" string="Create Job">  
-                           </button>  -->
-                       <!-- </div> -->
-
 						<group>
 							<group>
 								<field name="name" />
-								<field name="sale_order_id" />
+								<field name="description" />
+								<field name="sale_order_id" 
+								    options="{'no_create_edit': True, 'no_create': True}"/>
 							</group>
 							<group>
 								<field name="start_date" />
@@ -93,7 +52,7 @@
 
 		<record id="job_action" model="ir.actions.act_window">
 			<field name="name">Job</field>
-			<field name="res_model">job</field>
+			<field name="res_model">manage.job</field>
 			<field name="view_type">form</field>
 			<field name="view_mode">tree,form</field>
 		</record>

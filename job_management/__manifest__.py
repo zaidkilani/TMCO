@@ -20,7 +20,7 @@
     'data': [
         'security/ir.model.access.csv',
         'views/job.xml',
-#        'views/container_size_view.xml',
+        'views/siv.xml',
 #        'views/agreement_method_view.xml',
 #        'views/custoemr_class_view.xml',
 # #        'report/sale_report.xml',
