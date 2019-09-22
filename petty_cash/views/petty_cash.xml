@@ -52,14 +52,16 @@
                                     string="Expense Type"/>
                                 <field name="analytic_account" 
                                     options="{'no_create_edit': True, 'no_create': True, 'no_open': True}"/>
-                                <field name="attachment" />
+                                <field name="attachement_ids" widget="many2many_binary"/>
                                 <field name="bill_no"/>
+                                <field name="vendor_name" />
                                 <field name="date_time" />
                                 <field name="allowed_expenses_ids" widget="many2many_tags" 
                                         domain="[('id','in',allowed_expenses_ids_com)]"
                                         options="{'no_create_edit': True, 'no_create': True, 'no_open': True}"/>
                                 <field name="allowed_expenses_ids_com" 
                                         widget="many2many_tags" invisible="1"/>
+                                <field name="currency_id" options="{'no_create_edit': True, 'no_create': True, 'no_open': True}"/>
                                 <field name="cost" />
                             </tree>
                         </field>

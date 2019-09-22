@@ -52,15 +52,14 @@ class PettyCashLine(models.Model):
     product_id = fields.Many2one('product.product', required=True)
     petty_cash_id=fields.Many2one('petty.cash')
     analytic_account = fields.Many2one('account.analytic.account', string='Analytical Account')
-    attachment=fields.Binary('Attachment')
+    attachement_ids = fields.Many2many('ir.attachment', string="Attachment Doc")
     date_time=fields.Date('Date')
     allowed_expenses_ids=fields.Many2many('petty.cash.type', string='Type')
     allowed_expenses_ids_com=fields.Many2many('petty.cash.type', related='petty_cash_id.allowed_expenses')
-    cost=fields.Float()
+    cost=fields.Monetary()
     bill_no=fields.Char('Bill No.')
-    
-    
-    
-    
+    vendor_name=fields.Char('Vendor Name')
+    currency_id = fields.Many2one('res.currency', string="Currency", related='petty_cash_id.currency_id')
+
     
     
