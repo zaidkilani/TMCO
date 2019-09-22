@@ -22,7 +22,7 @@
         'views/start_petty.xml',
         'views/petty_cash.xml',
         'views/petty_confige.xml',
-#        'views/custoemr_class_view.xml',
+        'views/close_petty_cash.xml',
 # #        'report/sale_report.xml',
 #        'views/customs_declaration_view.xml',
 #        'views/insurance_type_view.xml',

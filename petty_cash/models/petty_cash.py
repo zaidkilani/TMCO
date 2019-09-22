@@ -17,6 +17,8 @@ class PettyCash(models.Model):
 #   Openning balance fields 
     currency_id = fields.Many2one('res.currency', string="Currency")
     amount = fields.Monetary()
+    actual_close_bal= fields.Monetary()
+    diffrence_bal= fields.Monetary(compute='_compute_diff_balc')
     opening_date=fields.Date('Opening Date')
     type=fields.Selection([
                           ('cash','Cash'),
@@ -24,9 +26,15 @@ class PettyCash(models.Model):
     chque_no=fields.Integer('Chque No')
     bank_id=fields.Many2one('res.partner.bank', string='Bank')
     remain_balance = fields.Monetary('Remaining Balance', compute='_calculate_remaining_balance')
+    
 #   ids
     petty_cash_line_ids=fields.One2many('petty.cash.line', 'petty_cash_id')  
     
+    @api.depends('amount','actual_close_bal')
+    def _compute_diff_balc(self):
+        for rec in self:
+            rec.diffrence_bal=rec.remain_balance - rec.actual_close_bal
+            
     @api.model
     def create(self, values):
         res = super(PettyCash, self).create(values)
