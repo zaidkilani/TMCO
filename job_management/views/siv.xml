@@ -42,13 +42,27 @@
                                     options="{'no_create_edit': True, 'no_create': True, 'no_open': True}"
                                     string="Item"/>
                                 <field name="product_inte_ref" />
-                                <field name="quantity" required="1"/>
+                                <field name="account_id" 
+                                    options="{'no_create_edit': True, 'no_create': True, 'no_open': True}"/>
+                                <!-- <field name="quantity" required="1"/> -->
+                                <field name="initial_demand" required="1"/>
+                                <field name="reserved"/>
+                                <field name="done"/>
                                 <field name="currency_id" 
                                     options="{'no_create_edit': True, 'no_create': True, 'no_open': True}"/>
                                 <field name="standard_price" widget="monetary"/>
                                 <field name="amount" />
                             </tree>
                         </field>
+                        </page>
+                        <page string="Account">
+                            <group>
+                                <group>
+                                    <field name="account_id" 
+                                        options="{'no_create_edit': True, 'no_create': True, 'no_open': True}"/>
+                                    <field name="location_id" />
+                                </group>
+                            </group>
                         </page>
                         </notebook>
 					</sheet>
