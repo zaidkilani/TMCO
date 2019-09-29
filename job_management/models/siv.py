@@ -39,13 +39,11 @@ class JobSIV(models.Model):
                                                                  'line_ids': [(0, 0, {
                                                                          'debit': 0.0,
                                                                          'credit': line.amount,
-                                                                         'account_id': line.account_id.id,
-                                                                         'partner_id': 14,
-                                                                     }), (0, 0, {
+                                                                         'account_id': line.account_id.id}), 
+                                                                         (0, 0, {
                                                                          'credit': 0.0,
                                                                          'debit':line.amount,
-                                                                         'account_id': line.account_contra_id.id,
-                                                                         'partner_id': 14})]})
+                                                                         'account_id': line.account_contra_id.id})]})
                         rec.write({'state':'posted', 'stage':'posted'})
                     else: 
                         raise UserError('Make sure product has expense and contra accounts')
