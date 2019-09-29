@@ -21,7 +21,7 @@
         'security/ir.model.access.csv',
         'views/job.xml',
         'views/siv.xml',
-#        'views/agreement_method_view.xml',
+        'views/views.xml',
 #        'views/custoemr_class_view.xml',
 # #        'report/sale_report.xml',
 #        'views/customs_declaration_view.xml',

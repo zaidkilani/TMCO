@@ -16,6 +16,8 @@ class JobSIV(models.Model):
     siv_line_ids=fields.One2many('siv.line', 'job_siv_id')
     account_id=fields.Many2one('account.account', string='WIP')
     location_id=fields.Many2one('stock.location', string='Location')
+    state = fields.Selection([('new', 'New'), ('posted', 'Posted')], default="new")
+    stage = fields.Selection([('new', 'New'), ('posted', 'Posted')], default="new")
     
     @api.model
     def create(self, values):
@@ -24,6 +26,13 @@ class JobSIV(models.Model):
             val['name'] = self.env['ir.sequence'].next_by_code('siv.seq')
         return res
     
+    @api.multi
+    def post_je(self):
+        """ Post SIV"""
+        for rec in self:
+            rec.write({'state':'posted',
+                       'stage':'posted'})
+            
 class SIVLine(models.Model):
     _name="siv.line"
     _description="Lines of SIV Rec"
@@ -38,7 +47,7 @@ class SIVLine(models.Model):
     standard_price=fields.Float(string='Rate', related='product_id.standard_price')
     amount=fields.Monetary(compute='_compute_amount')
     job_siv_id=fields.Many2one('job.siv')
-    account_id=fields.Many2one('account.account', string='Account')
+    account_id=fields.Many2one('account.account', string='Account', related='product_id.categ_id.property_account_expense_categ_id')
     
     @api.depends('initial_demand','standard_price')
     def _compute_amount(self):

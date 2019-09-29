@@ -23,6 +23,11 @@
 			<field name="model">job.siv</field>
 			<field name="arch" type="xml">
 				<form>
+				    <header>
+				        <button name='post_je' type='object' string='Post' states='new'
+				                class='oe_highlight' confirm='Are you sure you want to post this SIV?'/>
+				        <field name="stage" widget="statusbar" statusbar_visible="new,posted" />
+				    </header>
 					<sheet>
 						<group>
 							<group>
@@ -30,6 +35,7 @@
 								<field name="date" />
 							</group>
 							<group>
+							    <field name="state" readonly='1'/>
 								<field name="siv_job_id" />
 								<field name="job_description" />
 							</group>
@@ -42,8 +48,7 @@
                                     options="{'no_create_edit': True, 'no_create': True, 'no_open': True}"
                                     string="Item"/>
                                 <field name="product_inte_ref" />
-                                <field name="account_id" 
-                                    options="{'no_create_edit': True, 'no_create': True, 'no_open': True}"/>
+                                <field name="account_id" />
                                 <!-- <field name="quantity" required="1"/> -->
                                 <field name="initial_demand" required="1"/>
                                 <field name="reserved"/>
