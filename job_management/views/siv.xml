@@ -49,6 +49,7 @@
                                     string="Item"/>
                                 <field name="product_inte_ref" />
                                 <field name="account_id" />
+                                <field name="account_contra_id" />
                                 <!-- <field name="quantity" required="1"/> -->
                                 <field name="initial_demand" required="1"/>
                                 <field name="reserved"/>

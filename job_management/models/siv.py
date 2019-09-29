@@ -28,11 +28,31 @@ class JobSIV(models.Model):
     
     @api.multi
     def post_je(self):
-        """ Post SIV"""
+        """ Post SIV, and generate Jornal enteries"""
         for rec in self:
-            rec.write({'state':'posted',
-                       'stage':'posted'})
-            
+            if rec.siv_line_ids:
+                for line in rec.siv_line_ids:
+                    if line.product_id.categ_id.property_account_expense_categ_id and line.product_id.categ_id.product_account_contra_categ_id:
+                        self.env['account.move'].create({'ref':'JE'+' '+rec.name,
+                                                                 'date': rec.date,
+                                                                 'journal_id':self.env['account.journal'].search([('name','=','Miscellaneous Operations')]).id,
+                                                                 'line_ids': [(0, 0, {
+                                                                         'debit': 0.0,
+                                                                         'credit': line.amount,
+                                                                         'account_id': line.account_id.id,
+                                                                         'partner_id': 14,
+                                                                     }), (0, 0, {
+                                                                         'credit': 0.0,
+                                                                         'debit':line.amount,
+                                                                         'account_id': line.account_contra_id.id,
+                                                                         'partner_id': 14})]})
+                        rec.write({'state':'posted', 'stage':'posted'})
+                    else: 
+                        raise UserError('Make sure product has expense and contra accounts')
+            else:
+                raise UserError('There is no materials')
+                
+
 class SIVLine(models.Model):
     _name="siv.line"
     _description="Lines of SIV Rec"
@@ -47,8 +67,9 @@ class SIVLine(models.Model):
     standard_price=fields.Float(string='Rate', related='product_id.standard_price')
     amount=fields.Monetary(compute='_compute_amount')
     job_siv_id=fields.Many2one('job.siv')
-    account_id=fields.Many2one('account.account', string='Account', related='product_id.categ_id.property_account_expense_categ_id')
-    
+    account_id=fields.Many2one('account.account', string='Expense Acct', related='product_id.categ_id.property_account_expense_categ_id')
+    account_contra_id=fields.Many2one('account.account', string='Contra Acct', related='product_id.categ_id.product_account_contra_categ_id')
+
     @api.depends('initial_demand','standard_price')
     def _compute_amount(self):
         for rec in self:
