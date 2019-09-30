@@ -4,7 +4,7 @@ job_siv_access,job_siv_access,model_job_siv,base.group_user,1,1,1,1
 siv_line_access,siv_line_access,model_siv_line,base.group_user,1,1,1,1
 product_category_access,product_category_access,model_product_category,base.group_user,1,1,1,1
 stock_quant_access,stock_quant_access,model_stock_quant,base.group_user,1,1,1,1
-
-
+wip_account_access,wip_account_access,model_wip_account,base.group_user,1,1,1,1
+journal_siv_access,journal_siv_access,model_journal_siv,base.group_user,1,1,1,1
 
 

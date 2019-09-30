@@ -35,6 +35,8 @@
 							<group>
 								<field name="name" readonly="1"/>
 								<field name="date" />
+								<field name="journal_siv_id" 
+								options="{'no_create_edit': True, 'no_create': True, 'no_open': True}"/>
 							</group>
 							<group>
 							    <field name="state" readonly='1'/>
@@ -66,8 +68,8 @@
                         <page string="Account">
                             <group>
                                 <group>
-                                    <field name="account_id" 
-                                        options="{'no_create_edit': True, 'no_create': True, 'no_open': True}"
+                                    <field name="account_id"
+                                        options="{'no_create_edit': True, 'no_create': True, 'no_open': True}" 
                                         required='1'/>
                                     <field name="location_id" required='1'/>
                                 </group>

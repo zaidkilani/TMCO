@@ -14,11 +14,11 @@ class JobSIV(models.Model):
     siv_job_id=fields.Many2one('manage.job',string='Job No.')
     job_description=fields.Char(string='Job Description', related='siv_job_id.description')
     siv_line_ids=fields.One2many('siv.line', 'job_siv_id')
-    account_id=fields.Many2one('account.account', string='WIP')
+    account_id=fields.Many2one('wip.account', string='WIP')
     location_id=fields.Many2one('stock.location', string='Location')
     state = fields.Selection([('new', 'New'), ('wip', 'WIP'),('posted_expense', 'Posted Expense')], default="new")
     stage = fields.Selection([('new', 'New'), ('wip', 'WIP'),('posted_expense', 'Posted Expense')], default="new")
-    
+    journal_siv_id=fields.Many2one('journal.siv', string='Journal')
     @api.model
     def create(self, values):
         res = super(JobSIV, self).create(values)
