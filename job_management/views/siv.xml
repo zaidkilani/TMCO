@@ -24,9 +24,11 @@
 			<field name="arch" type="xml">
 				<form>
 				    <header>
-				        <button name='post_je' type='object' string='Post' states='new'
+				        <button name='post_je' type='object' string='Post' states='wip'
 				                class='oe_highlight' confirm='Are you sure you want to post this SIV?'/>
-				        <field name="stage" widget="statusbar" statusbar_visible="new,posted" />
+				        <button name='post_je_mater' type='object' string='WIP' states='new'
+                                class='oe_highlight' confirm='Are you sure you want to post WIP of this SIV?'/>
+				        <field name="stage" widget="statusbar" statusbar_visible="new,wip,posted_expense" />
 				    </header>
 					<sheet>
 						<group>
@@ -36,7 +38,7 @@
 							</group>
 							<group>
 							    <field name="state" readonly='1'/>
-								<field name="siv_job_id" />
+								<field name="siv_job_id" required='1'/>
 								<field name="job_description" />
 							</group>
 						</group>
@@ -65,8 +67,9 @@
                             <group>
                                 <group>
                                     <field name="account_id" 
-                                        options="{'no_create_edit': True, 'no_create': True, 'no_open': True}"/>
-                                    <field name="location_id" />
+                                        options="{'no_create_edit': True, 'no_create': True, 'no_open': True}"
+                                        required='1'/>
+                                    <field name="location_id" required='1'/>
                                 </group>
                             </group>
                         </page>

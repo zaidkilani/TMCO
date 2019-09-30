@@ -16,8 +16,8 @@ class JobSIV(models.Model):
     siv_line_ids=fields.One2many('siv.line', 'job_siv_id')
     account_id=fields.Many2one('account.account', string='WIP')
     location_id=fields.Many2one('stock.location', string='Location')
-    state = fields.Selection([('new', 'New'), ('posted', 'Posted')], default="new")
-    stage = fields.Selection([('new', 'New'), ('posted', 'Posted')], default="new")
+    state = fields.Selection([('new', 'New'), ('wip', 'WIP'),('posted_expense', 'Posted Expense')], default="new")
+    stage = fields.Selection([('new', 'New'), ('wip', 'WIP'),('posted_expense', 'Posted Expense')], default="new")
     
     @api.model
     def create(self, values):
@@ -30,25 +30,65 @@ class JobSIV(models.Model):
     def post_je(self):
         """ Post SIV, and generate Jornal enteries"""
         for rec in self:
-            if rec.siv_line_ids:
-                for line in rec.siv_line_ids:
-                    if line.product_id.categ_id.property_account_expense_categ_id and line.product_id.categ_id.product_account_contra_categ_id:
-                        self.env['account.move'].create({'ref':'JE'+' '+rec.name,
-                                                                 'date': rec.date,
-                                                                 'journal_id':self.env['account.journal'].search([('name','=','Miscellaneous Operations')]).id,
-                                                                 'line_ids': [(0, 0, {
-                                                                         'debit': 0.0,
-                                                                         'credit': line.amount,
-                                                                         'account_id': line.account_id.id}), 
-                                                                         (0, 0, {
-                                                                         'credit': 0.0,
-                                                                         'debit':line.amount,
-                                                                         'account_id': line.account_contra_id.id})]})
-                        rec.write({'state':'posted', 'stage':'posted'})
-                    else: 
-                        raise UserError('Make sure product has expense and contra accounts')
+            if not rec.siv_job_id.analytic_account:
+                raise UserError('There is no Analytic account assigned to Job')
             else:
-                raise UserError('There is no materials')
+                if rec.siv_line_ids:
+                    for line in rec.siv_line_ids:
+                        if line.product_id.categ_id.property_account_expense_categ_id and line.product_id.categ_id.product_account_contra_categ_id:
+                            self.env['account.move'].create({'ref':'JE'+'-'+rec.name,
+                                                                     'date': rec.date,
+                                                                     'journal_id':self.env['account.journal'].search([('name','=','Miscellaneous Operations')]).id,
+                                                                     'line_ids': [(0, 0, {
+                                                                             'debit': 0.0,
+                                                                             'credit': line.amount,
+                                                                             'account_id': line.account_id.id,
+                                                                             'analytic_account_id':rec.siv_job_id.analytic_account.id,
+                                                                             'name':'Expense'}), 
+                                                                             (0, 0, {
+                                                                             'credit': 0.0,
+                                                                             'debit':line.amount,
+                                                                             'account_id': line.account_contra_id.id,
+                                                                             'analytic_account_id':rec.siv_job_id.analytic_account.id,
+                                                                             'name':'Contra'})]})
+                            rec.write({'state':'posted_expense', 'stage':'posted_expense'})
+                        else: 
+                            raise UserError('Make sure product has expense and contra accounts')
+                else:
+                    raise UserError('There is no materials')
+    
+    @api.multi
+    def post_je_mater(self):
+        for rec in self:
+            if not rec.siv_job_id.analytic_account:
+                raise UserError('There is no Analytic account assigned to Job')
+            else:
+                if not rec.siv_line_ids:
+                    raise UserError("There is no materials")
+                else:
+                    for line in rec.siv_line_ids:
+                        if not line.product_id.categ_id.property_stock_valuation_account_id :
+                            raise UserError("Make sure there is 'Stock Valuation Account for each line'")
+                        else:
+                            if not rec.account_id:
+                                raise UserError("Make sure there is 'WIP Acct for SIV' ")
+                            else:
+                                self.env['account.move'].create({'ref':'JE-WIP'+'-'+rec.name,
+                                                                         'date': rec.date,
+                                                                         'journal_id':self.env['account.journal'].search([('name','=','Miscellaneous Operations')]).id,
+                                                                         'line_ids': [(0, 0, {
+                                                                                 'debit': 0.0,
+                                                                                 'credit': line.amount,
+                                                                                 'account_id': line.product_id.categ_id.property_stock_valuation_account_id.id,
+                                                                                 'analytic_account_id':rec.siv_job_id.analytic_account.id,
+                                                                                 'name':'Stock Valuation'}), 
+                                                                                 (0, 0, {
+                                                                                 'credit': 0.0,
+                                                                                 'debit':line.amount,
+                                                                                 'account_id': rec.account_id.id,
+                                                                                 'analytic_account_id':rec.siv_job_id.analytic_account.id,
+                                                                                 'name':'WIP'})]})
+                                rec.write({'state':'wip', 'stage':'wip'})
                 
 
 class SIVLine(models.Model):
