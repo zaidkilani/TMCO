@@ -19,6 +19,9 @@ class JobSIV(models.Model):
     state = fields.Selection([('new', 'New'), ('wip', 'WIP'),('posted_expense', 'Posted Expense')], default="new")
     stage = fields.Selection([('new', 'New'), ('wip', 'WIP'),('posted_expense', 'Posted Expense')], default="new")
     journal_siv_id=fields.Many2one('journal.siv', string='Journal')
+    stock_picking_type_id=fields.Many2one('stock.picking.type' , string='Operation Type')
+    
+    
     @api.model
     def create(self, values):
         res = super(JobSIV, self).create(values)
@@ -89,6 +92,30 @@ class JobSIV(models.Model):
                                                                                  'analytic_account_id':rec.siv_job_id.analytic_account.id,
                                                                                  'name':'WIP'})]})
                                 rec.write({'state':'wip', 'stage':'wip'})
+            ir_seq_obj=self.env['ir.sequence']
+            if not ir_seq_obj.name=='SSIV':
+                    ir_seq_obj.create({'name':'SSIV',
+                                       'implementation':'standard',
+                                       'active':True,
+                                       'prefix':'SSIV',
+                                       'padding':0,
+                                       'number_increment':1,
+                                       'number_next_actual':0})
+                    
+            stock_pick_type_obj=self.env['stock.picking.type'].search([('name','=','Stock Issue Voucher')],limit=1)
+            if not stock_pick_type_obj:
+                ir_seq_obj=self.env['ir.sequence'].search([('name','=','SSIV')],limit=1)
+                stock_loc_obj=self.env['stock.location'].search([('name','=','Stock'),('barcode','=','WH-STOCK')],limit=1)
+                rec.stock_picking_type_id.create({'name':'Stock Issue Voucher',
+                                                  'sequence_id':ir_seq_obj.id,
+                                                  'code':'internal',
+                                                  'show_reserved':True,
+                                                  'default_location_dest_id':stock_loc_obj.id}) 
+                rec.write({'stock_picking_type_id':self.env['stock.picking.type'].search([('name','=','Stock Issue Voucher')],limit=1).id})
+            else:
+                rec.write({'stock_picking_type_id':self.env['stock.picking.type'].search([('name','=','Stock Issue Voucher')],limit=1).id})
+                
+                
                 
 
 class SIVLine(models.Model):
@@ -99,8 +126,8 @@ class SIVLine(models.Model):
     product_inte_ref=fields.Char(string='Description', related='product_id.default_code')
 #     quantity=fields.Integer()
     initial_demand=fields.Float()
-    reserved=fields.Integer(compute='_compute_reserved')
-    done=fields.Integer()
+#     reserved=fields.Integer(compute='_compute_reserved')
+#     done=fields.Integer()
     currency_id = fields.Many2one('res.currency', string="Currency", related='product_id.currency_id')
     standard_price=fields.Float(string='Rate', related='product_id.standard_price')
     amount=fields.Monetary(compute='_compute_amount')
@@ -113,15 +140,15 @@ class SIVLine(models.Model):
         for rec in self:
             rec.amount=rec.initial_demand*rec.standard_price
             
-    @api.one
-    @api.depends('initial_demand')
-    def _compute_reserved(self):
-        for rec in self:
-            stock_obj=self.env['stock.quant'].search([('product_id.default_code','=',rec.product_id.default_code),('quantity','>',0.0)],limit=1)
-            if stock_obj:
-                result=stock_obj.quantity-(rec.initial_demand/2)
-                stock_obj.write({'quantity':result})
-                self.reserved=self.initial_demand
+#     @api.one
+#     @api.depends('initial_demand')
+#     def _compute_reserved(self):
+#         for rec in self:
+#             stock_obj=self.env['stock.quant'].search([('product_id.default_code','=',rec.product_id.default_code),('quantity','>',0.0)],limit=1)
+#             if stock_obj:
+#                 result=stock_obj.quantity-(rec.initial_demand/2)
+#                 stock_obj.write({'quantity':result})
+#                 self.reserved=self.initial_demand
 #         
                 
                 
