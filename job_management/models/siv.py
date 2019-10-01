@@ -92,16 +92,15 @@ class JobSIV(models.Model):
                                                                                  'analytic_account_id':rec.siv_job_id.analytic_account.id,
                                                                                  'name':'WIP'})]})
                                 rec.write({'state':'wip', 'stage':'wip'})
-            ir_seq_obj=self.env['ir.sequence']
-            if not ir_seq_obj.name=='SSIV':
-                    ir_seq_obj.create({'name':'SSIV',
+            ir_seq_obj=self.env['ir.sequence'].search([('name','=','SSIV')],limit=1)
+            if not ir_seq_obj:
+                ir_seq_obj.create({'name':'SSIV',
                                        'implementation':'standard',
                                        'active':True,
                                        'prefix':'SSIV',
                                        'padding':0,
                                        'number_increment':1,
                                        'number_next_actual':0})
-                    
             stock_pick_type_obj=self.env['stock.picking.type'].search([('name','=','Stock Issue Voucher')],limit=1)
             if not stock_pick_type_obj:
                 ir_seq_obj=self.env['ir.sequence'].search([('name','=','SSIV')],limit=1)
