@@ -25,3 +25,8 @@ class JournalSiv(models.Model):
     
     name=fields.Char()
     journal_id=fields.Many2one('account.journal', string='Journal')
+    
+class ProcurementGroup(models.Model):
+    _inherit='procurement.group'
+    
+    siv_id=fields.Many2one('job.siv')

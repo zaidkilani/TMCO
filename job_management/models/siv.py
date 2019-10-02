@@ -104,15 +104,44 @@ class JobSIV(models.Model):
             stock_pick_type_obj=self.env['stock.picking.type'].search([('name','=','Stock Issue Voucher')],limit=1)
             if not stock_pick_type_obj:
                 ir_seq_obj=self.env['ir.sequence'].search([('name','=','SSIV')],limit=1)
-                stock_loc_obj=self.env['stock.location'].search([('name','=','Stock'),('barcode','=','WH-STOCK')],limit=1)
+                stock_loc_obj=self.env['stock.location'].search([('name','=','OUT'),('barcode','=','WH-OUT')],limit=1)
+                stock_loc_src_obj=self.env['stock.location'].search([('name','=','STOCK'),('barcode','=','WH-STOCK')],limit=1)
                 rec.stock_picking_type_id.create({'name':'Stock Issue Voucher',
                                                   'sequence_id':ir_seq_obj.id,
                                                   'code':'internal',
                                                   'show_reserved':True,
-                                                  'default_location_dest_id':stock_loc_obj.id}) 
+                                                  'default_location_dest_id':stock_loc_obj.id,
+                                                  'default_location_src_id':stock_loc_src_obj.id}) 
                 rec.write({'stock_picking_type_id':self.env['stock.picking.type'].search([('name','=','Stock Issue Voucher')],limit=1).id})
             else:
                 rec.write({'stock_picking_type_id':self.env['stock.picking.type'].search([('name','=','Stock Issue Voucher')],limit=1).id})
+            stock_pick_obj=self.env['stock.picking']
+            proc_group_id=self.env['procurement.group']
+            stock_pick_obj.group_id.create({'name':rec.name,
+                                  'move_type':'direct',
+                                  'siv_id':rec.id})
+            proc_group_search_obj=self.env['procurement.group'].search([('siv_id','=',rec.id)],limit=1)
+            print('===================================group id:::::',proc_group_search_obj.name)
+            uom_obj=self.env['uom.uom'].search([('name','=','Unit(s)')],limit=1)
+            list_of_materials=[]
+            for l in rec.siv_line_ids:
+                list_of_materials.append([0,0,{'product_id':l.product_id.id,
+                                               'product_uom_qty':l.initial_demand,
+                                               'name':l.product_id.name,
+                                               'location_id':rec.stock_picking_type_id.default_location_src_id.id,
+                                               'location_dest_id':rec.stock_picking_type_id.default_location_dest_id.id,
+                                               'procure_method':'make_to_stock',
+                                               'product_uom':uom_obj.id
+                                               }])
+            stock_pick_obj.create({'location_id':rec.stock_picking_type_id.default_location_src_id.id,
+                                   'location_dest_id':rec.stock_picking_type_id.default_location_dest_id.id,
+                                   'picking_type_id':rec.stock_picking_type_id.id,
+                                   'origin':rec.name,
+                                   'priority':'1',
+                                   'move_type':'direct',
+                                   'group_id':proc_group_search_obj.id,
+                                   'move_ids_without_package':list_of_materials
+                                   })
                 
                 
                 
