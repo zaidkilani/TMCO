@@ -31,6 +31,11 @@
 				        <field name="stage" widget="statusbar" statusbar_visible="new,wip,posted_expense" />
 				    </header>
 					<sheet>
+					   <div class="oe_button_box" name="button_box">  
+                            <button name="call_internal_transfer" type="object"  
+                            class="oe_stat_button" icon="fa-exchange" string="Transfer">  
+                           </button> 
+                       </div>
 						<group>
 							<group>
 								<field name="name" readonly="1"/>

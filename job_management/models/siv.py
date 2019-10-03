@@ -116,12 +116,12 @@ class JobSIV(models.Model):
             else:
                 rec.write({'stock_picking_type_id':self.env['stock.picking.type'].search([('name','=','Stock Issue Voucher')],limit=1).id})
             stock_pick_obj=self.env['stock.picking']
-            proc_group_id=self.env['procurement.group']
-            stock_pick_obj.group_id.create({'name':rec.name,
-                                  'move_type':'direct',
-                                  'siv_id':rec.id})
-            proc_group_search_obj=self.env['procurement.group'].search([('siv_id','=',rec.id)],limit=1)
-            print('===================================group id:::::',proc_group_search_obj.name)
+#             proc_group_id=self.env['procurement.group']
+#             stock_pick_obj.group_id.create({'name':rec.name,
+#                                   'move_type':'direct',
+#                                   'siv_id':rec.id})
+#             proc_group_search_obj=self.env['procurement.group'].search([('siv_id','=',rec.id)],limit=1)
+#             print('===================================group id:::::',proc_group_search_obj.name)
             uom_obj=self.env['uom.uom'].search([('name','=','Unit(s)')],limit=1)
             list_of_materials=[]
             for l in rec.siv_line_ids:
@@ -139,11 +139,29 @@ class JobSIV(models.Model):
                                    'origin':rec.name,
                                    'priority':'1',
                                    'move_type':'direct',
-                                   'group_id':proc_group_search_obj.id,
+#                                    'group_id':proc_group_search_obj.id,
                                    'move_ids_without_package':list_of_materials
                                    })
                 
-                
+    @api.multi  
+    def call_internal_transfer(self):  
+        mod_obj = self.env['ir.model.data']
+        try:
+            tree_res = mod_obj.get_object_reference('stock', 'vpicktree')[1]
+            form_res = mod_obj.get_object_reference('stock', 'view_picking_form')[1]
+        except ValueError:
+            form_res = tree_res = False
+        return {  
+            'name': ('stock.picking'),  
+            'type': 'ir.actions.act_window',  
+            'view_type': 'form',  
+            'view_mode': "[tree,form]",  
+            'res_model': 'stock.picking',  
+            'view_id': False,  
+            'views': [(tree_res, 'tree'),(form_res, 'form')], 
+            'domain': [('origin', '=', self.name)], 
+            'target': 'current',  
+               } 
                 
 
 class SIVLine(models.Model):
