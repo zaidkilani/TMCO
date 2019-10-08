@@ -38,7 +38,7 @@ class JobSIV(models.Model):
             else:
                 if rec.siv_line_ids:
                     for line in rec.siv_line_ids:
-                        if line.product_id.categ_id.property_account_expense_categ_id and line.product_id.categ_id.product_account_contra_categ_id:
+                        if line.product_id.categ_id.product_account_exp_siv_id and line.product_id.categ_id.product_account_contra_categ_id:
                             self.env['account.move'].create({'ref':'JE'+'-'+rec.name,
                                                                      'date': rec.date,
                                                                      'journal_id':self.env['account.journal'].search([('name','=','Miscellaneous Operations')]).id,
@@ -178,7 +178,7 @@ class SIVLine(models.Model):
     standard_price=fields.Float(string='Rate', related='product_id.standard_price')
     amount=fields.Monetary(compute='_compute_amount')
     job_siv_id=fields.Many2one('job.siv')
-    account_id=fields.Many2one('account.account', string='Expense Acct', related='product_id.categ_id.property_account_expense_categ_id')
+    account_id=fields.Many2one('account.account', string='Expense Acct', related='product_id.categ_id.product_account_exp_siv_id')
     account_contra_id=fields.Many2one('account.account', string='Contra Acct', related='product_id.categ_id.product_account_contra_categ_id')
 
     @api.depends('initial_demand','standard_price')

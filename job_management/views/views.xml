@@ -13,6 +13,7 @@
                     expr="//field[@name='property_account_expense_categ_id']"
                     position="after">
                         <field name="product_account_contra_categ_id"/>
+                        <field name="product_account_exp_siv_id"/>
                 </xpath>
             </field>
         </record>

@@ -7,6 +7,7 @@ class ProductCategory(models.Model):
     _decription='product.category'
     
     product_account_contra_categ_id=fields.Many2one('account.account', string='Contra Account')
+    product_account_exp_siv_id=fields.Many2one('account.account', string='Expensive/SIV Account')
     
 class StockQuant(models.Model):
     _inherit='stock.quant'
