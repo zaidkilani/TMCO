@@ -110,7 +110,7 @@ class JobSIV(models.Model):
                                                   'sequence_id':ir_seq_obj.id,
                                                   'code':'internal',
                                                   'show_reserved':True,
-                                                  'default_location_dest_id':stock_loc_obj.id,
+                                                  'default_location_dest_id':stock_loc_src_obj.id,
                                                   'default_location_src_id':stock_loc_src_obj.id}) 
                 rec.write({'stock_picking_type_id':self.env['stock.picking.type'].search([('name','=','Stock Issue Voucher')],limit=1).id})
             else:
