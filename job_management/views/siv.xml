@@ -24,11 +24,13 @@
 			<field name="arch" type="xml">
 				<form>
 				    <header>
-				        <button name='post_je' type='object' string='Post' states='wip'
+				        <button name='post_je' type='object' string='Post' states='wip,prod_trans'
 				                class='oe_highlight' confirm='Are you sure you want to post this SIV?'/>
 				        <button name='post_je_mater' type='object' string='WIP' states='new'
                                 class='oe_highlight' confirm='Are you sure you want to post WIP of this SIV?'/>
-				        <field name="stage" widget="statusbar" statusbar_visible="new,wip,posted_expense" />
+                        <button name='production_move' type='object' string='Production Internal Trans' states='wip'
+                                class='oe_highlight' confirm='Are you sure you want to Production Internal Transfer for SIV ?'/>
+				        <field name="stage" widget="statusbar" statusbar_visible="new,wip,prod_trans,posted_expense" />
 				    </header>
 					<sheet>
 					   <div class="oe_button_box" name="button_box">  
@@ -42,7 +44,7 @@
 								<field name="date" />
 								<field name="journal_siv_id" 
 								options="{'no_create_edit': True, 'no_create': True, 'no_open': True}"/>
-								<field name="stock_picking_type_id" readonly="1" />
+								<field name="stock_picking_type_id" />
 							</group>
 							<group>
 							    <field name="state" readonly='1'/>

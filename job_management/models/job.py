@@ -14,7 +14,8 @@ class ManageJob(models.Model):
     delivery_date = fields.Date(string='Delivery Date')
     sale_order_id=fields.Many2one('sale.order', string='Sale Order No.')
     analytic_account = fields.Many2one('account.analytic.account', string='Analytical Account')
-    
+    location_pro_id=fields.Many2one('stock.location', string='Production Location')
+   
     @api.model
     def create(self, values):
         res = super(ManageJob, self).create(values)
@@ -29,4 +30,18 @@ class ManageJob(models.Model):
                 rec.message_post(body="Analytic account has been added")
             else:
                 raise UserError("This 'Job' is already assigned to an 'Analytic account'.")
+            st_lo_obj=self.env['stock.location'].search([('name','=',rec.name)],limit=1)
+            if st_lo_obj:
+                rec.location_pro_id=st_lo_obj.id
+            else:
+                rec.location_pro_id.create({'name':rec.name,
+                                            'usage':'production',
+                                            'barcode':rec.name})
+                rec.location_pro_id=self.env['stock.location'].search([('name','=',rec.name)],limit=1).id
         return res
+    
+    
+    
+    
+    
+    

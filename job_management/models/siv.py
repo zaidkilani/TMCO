@@ -15,9 +15,9 @@ class JobSIV(models.Model):
     job_description=fields.Char(string='Job Description', related='siv_job_id.description')
     siv_line_ids=fields.One2many('siv.line', 'job_siv_id')
     account_id=fields.Many2one('wip.account', string='WIP')
-    location_id=fields.Many2one('stock.location', string='Location')
-    state = fields.Selection([('new', 'New'), ('wip', 'WIP'),('posted_expense', 'Posted Expense')], default="new")
-    stage = fields.Selection([('new', 'New'), ('wip', 'WIP'),('posted_expense', 'Posted Expense')], default="new")
+    location_id=fields.Many2one('stock.location', string='Location', related='siv_job_id.location_pro_id')
+    state = fields.Selection([('new', 'New'), ('wip', 'WIP'),('prod_trans', 'Production Transfer'),('posted_expense', 'Posted Expense')], default="new")
+    stage = fields.Selection([('new', 'New'), ('wip', 'WIP'),('prod_trans', 'Production Transfer'),('posted_expense', 'Posted Expense')], default="new")
     journal_siv_id=fields.Many2one('journal.siv', string='Journal')
     stock_picking_type_id=fields.Many2one('stock.picking.type' , string='Operation Type')
     
@@ -142,6 +142,33 @@ class JobSIV(models.Model):
 #                                    'group_id':proc_group_search_obj.id,
                                    'move_ids_without_package':list_of_materials
                                    })
+    @api.multi
+    def production_move(self):
+        """ Production internal transfer """
+        for rec in self:
+#             ir_seq_obj=self.env['ir.sequence'].search([('name','=','SSIV')],limit=1)
+            stock_pick_obj=self.env['stock.picking']
+            uom_obj=self.env['uom.uom'].search([('name','=','Unit(s)')],limit=1)
+            list_of_materials=[]
+            for l in rec.siv_line_ids:
+                list_of_materials.append([0,0,{'product_id':l.product_id.id,
+                                               'product_uom_qty':l.initial_demand,
+                                               'name':l.product_id.name,
+                                               'location_id':rec.stock_picking_type_id.default_location_dest_id.id,
+                                               'location_dest_id':rec.location_id.id,
+                                               'procure_method':'make_to_stock',
+                                               'product_uom':uom_obj.id
+                                               }])
+            stock_pick_obj.create({'location_id':rec.stock_picking_type_id.default_location_dest_id.id,
+                                   'location_dest_id':rec.location_id.id,
+                                   'picking_type_id':rec.stock_picking_type_id.id,
+                                   'origin':rec.name,
+                                   'priority':'1',
+                                   'move_type':'direct',
+#                                    'group_id':proc_group_search_obj.id,
+                                   'move_ids_without_package':list_of_materials
+                                   })
+            rec.write({'state':'prod_trans', 'stage':'prod_trans'})
                 
     @api.multi  
     def call_internal_transfer(self):  
