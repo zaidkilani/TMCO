@@ -24,18 +24,26 @@
 			<field name="model">petty.cash</field>
 			<field name="arch" type="xml">
 				<form>
+				<header>
+				<button  attrs="{'invisible': [('move_id', '!=', False)]}" name="create_start_journal" type="object" string="POST" />
+				</header> 
 					<sheet>
 						<group>
 							<group>
 								<field name="name" />
 								<field name="resposible_id" options="{'no_create_edit': True, 'no_create': True, 'no_open': True}"/>
+								<field name="account_id" required="1"  options="{'no_create_edit': True, 'no_create': True, 'no_open': True}"/>
 								<field name="Treasurer_id" options="{'no_create_edit': True, 'no_create': True, 'no_open': True}"/>
 								<field name="allowed_expenses" widget="many2many_tags" 
 								    options="{'no_create_edit': True, 'no_create': True, 'no_open': True}"/>
+								  <field name="journal_id" required="1" 
+								    options="{'no_create_edit': True, 'no_create': True, 'no_open': True}"/>
+								     
 							</group>
 							<group>
 								<field name="start_date" />
 								<field name="expected_date" />
+								<field name="move_id" />
 							</group>
 						</group>
 						<notebook>

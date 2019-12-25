@@ -1,22 +1,35 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, api
+from odoo.exceptions import UserError
 
+class AccountMove(models.Model):
+    _inherit='account.move'
+    
+    petty_id = fields.Many2one('petty.cash',copy=False)
+    
+    
 class PettyCash(models.Model):
     _name='petty.cash'
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _description='Petty Cash Management'
     
     name = fields.Char(readonly=True)
-    start_date = fields.Date(string='Start Date', default=fields.Date.today())
+    start_date = fields.Date(string='Start Date', default=fields.Date.today(),required=True)
     expected_date = fields.Date(string='Expected Date') 
-    resposible_id=fields.Many2one('res.users', string='Responsible User')
+    resposible_id=fields.Many2one('res.users', string='Responsible User',required=True)
     Treasurer_id=fields.Many2one('res.users', string='Treasurer', default=lambda self: self.env.user)
-    allowed_expenses=fields.Many2many('petty.cash.type', string='Type')
+    allowed_expenses=fields.Many2many('petty.cash.type', string='Type',required=True)
+    journal_id = fields.Many2one('account.journal','Jouranl',required=True)
+    account_id = fields.Many2one('account.account','Responsible User Account',required=True)
+    move_id = fields.Many2one('account.move','Move',readonly=True,copy=False)
+    state = fields.Selection([('open','Open'),('closed','Closed')],default='open',copy=False)
+    posted = fields.Boolean(copy=False)
+    
 
 #   Openning balance fields 
     currency_id = fields.Many2one('res.currency', string="Currency")
-    amount = fields.Monetary()
+    amount = fields.Monetary(required=True)
     actual_close_bal= fields.Monetary()
     diffrence_bal= fields.Monetary(compute='_compute_diff_balc')
     opening_date=fields.Date('Opening Date')
@@ -29,7 +42,11 @@ class PettyCash(models.Model):
     
 #   ids
     petty_cash_line_ids=fields.One2many('petty.cash.line', 'petty_cash_id')  
-    
+    @api.multi
+    def write(self,vals):
+        if 'closed' in self.mapped('state'):
+            raise UserError('You cannot modify closed petty cash')
+        return super(PettyCash, self).write(vals)
     @api.depends('amount','actual_close_bal')
     def _compute_diff_balc(self):
         for rec in self:
@@ -46,13 +63,69 @@ class PettyCash(models.Model):
         for rec in self:
             rec.remain_balance=rec.amount-sum(rec.petty_cash_line_ids.mapped('cost'))
     
+    def create_start_journal(self):
+        vals = {'date':self.start_date,
+                'petty_id':self.id,
+                'journal_id':self.journal_id.id,
+                'ref':'Deposit of petty cash ' + self.name,
+                'line_ids':[(0,0,{'account_id':self.account_id.id,
+                                  'debit':self.amount}),
+                            (0,0,{'account_id':self.allowed_expenses.account_id.id,
+                                  'credit':self.amount})]}
+        self.move_id = self.env['account.move'].create(vals).id
+    def settle_je(self):
+        action = self.env.ref('account.action_move_journal_line').read()[0]
+        action['view_mode'] = 'form'
+        action['views'] = [action['views'][2]]
+        action['context'] = "{'view_no_maturity': True,'default_petty_id':%s}"%self.id
+        return action
+    
+    def open_je_view(self):
+        action = self.env.ref('account.action_move_journal_line').read()[0]
+        action['context'] = "{'view_no_maturity': True,'default_petty_id':%s}"%self.id
+        action['domain'] = [('petty_id','=',self.id)]
+        return action
+    
+        
+    def post_expenses(self):
+        self.posted = True
+        self.expected_date = fields.Date.today()
+        vals = {'date':self.expected_date,
+                'journal_id':self.journal_id.id,
+                'ref':'Expens of petty cash ' + self.name,
+                'line_ids':[],
+                'petty_id':self.id}
+        lines = []
+        cost = 0
+        for line in self.petty_cash_line_ids:
+            lines.append((0,0,{'account_id':line.product_id.property_account_expense_id.id,
+                                  'debit':line.cost,
+                                  'analytic_account_id':line.analytic_account.id}))
+            cost+=line.cost
+        lines.append((0,0,{'account_id':self.account_id.id,
+                                  'credit':cost}))
+        vals['line_ids'] = lines
+        self.env['account.move'].create(vals)
+        
+    def settle(self):
+        if self.diffrence_bal == 0.0:
+            self.state = 'closed'
+        else:
+            raise UserError("Please adjust actual closing balance")
+            
+            
+            
+        
 class PettyCashType(models.Model):
     _name='petty.cash.type'
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _description='Petty Cash Type'
     
-    name=fields.Char('Name')
+    name=fields.Char('Name',required=True)
     active=fields.Boolean(default=True)
+    account_id = fields.Many2one('account.account','Main Cash Account',required=True)
+    
+    
 class PettyCashLine(models.Model):
     _name='petty.cash.line'
     _description='Petty Cash Line Model'

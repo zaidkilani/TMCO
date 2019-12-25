@@ -27,7 +27,18 @@
 			<field name="model">petty.cash</field>
 			<field name="arch" type="xml">
 				<form create="0" delete="0">
+				 <header>
+				 <field name="posted" invisible="1"/>
+				 <button attrs="{'invisible': [('diffrence_bal', '=', 0.0)]}"  name="settle_je" type="object" string="SETTLE JE" />
+				 <button attrs="{'invisible': [('state', '=', 'closed')]}"  name="settle" type="object" string="SETTLE" />
+				 <button attrs="{'invisible': [('posted', '=', True)]}"  name="post_expenses" type="object" string="POST EXPENSES" />
+                        <field name="state" widget="statusbar"/>
+                    </header>
 					<sheet>
+					<div class="oe_button_box">
+                            <button name="open_je_view" class="oe_stat_button" icon="fa-bars" type="object" string="Journal Entries">
+                            </button>
+                    </div>
 						<group>
 							<group>
 								<field name="name" readonly="1"

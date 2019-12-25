@@ -32,8 +32,12 @@
 								    options="{'no_create_edit': True, 'no_create': True, 'no_open': True}"/>
 								<field name="resposible_id" readonly="1"
 								    options="{'no_create_edit': True, 'no_create': True, 'no_open': True}"/>
+								    <field name="account_id" required="1"  options="{'no_create_edit': True, 'no_create': True, 'no_open': True}"/>
 								<field name="Treasurer_id" readonly="1" 
 								    options="{'no_create_edit': True, 'no_create': True, 'no_open': True}"/>
+								    <field name="journal_id" required="1" 
+								    options="{'no_create_edit': True, 'no_create': True, 'no_open': True}"/>
+								     
 							</group>
 							<group>
 								<field name="start_date" readonly="1"/>
