@@ -8,13 +8,31 @@ class ManageJob(models.Model):
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _description='Job Management'
     
-    name = fields.Char(readonly=True)
+    name = fields.Char(readonly=True , string="Job Number")
     description=fields.Char()
     start_date = fields.Date(string='Start Date', default=fields.date.today())
     delivery_date = fields.Date(string='Delivery Date')
     sale_order_id=fields.Many2one('sale.order', string='Sale Order No.')
     analytic_account = fields.Many2one('account.analytic.account', string='Analytical Account')
     location_pro_id=fields.Many2one('stock.location', string='Production Location')
+    state = fields.Selection([('new', 'New'), ('running', 'Running'),('onhold', 'On Hold'),('closed', 'Closed')], default="new")
+
+    @api.multi
+    def running(self):
+        self.state="running"
+    
+    @api.multi
+    def onhold(self):
+        self.state="onhold"
+
+    @api.multi
+    def closed(self):
+        self.state="closed"
+    
+    
+    
+    
+
    
     @api.model
     def create(self, values):
