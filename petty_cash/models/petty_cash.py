@@ -122,7 +122,7 @@ class PettyCash(models.Model):
     def main_report(self):
         return self.env.ref('petty_cash.main_report').report_action(self.ids)
     
-    def main_report(self):
+    def close_report(self):
         return self.env.ref('petty_cash.close_report').report_action(self.ids)
     
     
