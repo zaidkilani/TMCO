@@ -4,7 +4,7 @@
 
 
 		<record model="ir.ui.view" id="view_job_tree">
-			<field name="name">job</field>
+			<field name="Job Number">job</field>
 			<field name="model">manage.job</field>
 			<field name="arch" type="xml">
 				<tree>
@@ -26,6 +26,20 @@
 			<field name="model">manage.job</field>
 			<field name="arch" type="xml">
 				<form>
+				   <header>
+           
+           <field name="state"  widget="statusbar"  statusbar_visible="new,running,onhold,closed" />
+
+           <button name="running" string="Running" states="new" type="object" 
+           class="oe_highlight"
+           />
+            <button name="onhold" string="On hold" states="running" type="object" 
+           class="oe_highlight"
+           />
+            <button name="closed" string="Closed" states="onhold" type="object" 
+		    class="oe_highlight"
+			 />
+                 </header>
 					<sheet>
 						<group>
 							<group>
