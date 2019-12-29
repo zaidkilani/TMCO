@@ -26,6 +26,7 @@
 				<form>
 				<header>
 				<button  attrs="{'invisible': [('move_id', '!=', False)]}" name="create_start_journal" type="object" string="POST" />
+				<button   name="issue_report" type="object" string="Print" />
 				</header> 
 					<sheet>
 						<group>

@@ -33,6 +33,7 @@
 				 <button attrs="{'invisible': [('state', '=', 'closed')]}"  name="settle" type="object" string="SETTLE" />
 				 <button attrs="{'invisible': [('posted', '=', True)]}"  name="post_expenses" type="object" string="POST EXPENSES" />
                         <field name="state" widget="statusbar"/>
+					<button   name="close_report" type="object" string="Print" />
                     </header>
 					<sheet>
 					<div class="oe_button_box">

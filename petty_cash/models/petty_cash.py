@@ -115,7 +115,18 @@ class PettyCash(models.Model):
             
             
             
-        
+    def issue_report(self):
+        return self.env.ref('petty_cash.issue_report').report_action(self.ids)
+    
+    
+    def main_report(self):
+        return self.env.ref('petty_cash.main_report').report_action(self.ids)
+    
+    def main_report(self):
+        return self.env.ref('petty_cash.close_report').report_action(self.ids)
+    
+    
+    
 class PettyCashType(models.Model):
     _name='petty.cash.type'
     _inherit = ['mail.thread', 'mail.activity.mixin']

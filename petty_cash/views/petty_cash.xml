@@ -25,6 +25,9 @@
 			<field name="model">petty.cash</field>
 			<field name="arch" type="xml">
 				<form create="0" delete="0">
+				<header>
+				<button   name="main_report" type="object" string="Print" />
+				</header> 
 					<sheet>
 						<group>
 							<group>
