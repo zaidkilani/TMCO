@@ -24,12 +24,8 @@
 			<field name="arch" type="xml">
 				<form>
 				    <header>
-				        <button name='post_je' type='object' string='Post' states='wip,prod_trans'
+				        <button name='post_je' type='object' string='Post' states='new'
 				                class='oe_highlight' confirm='Are you sure you want to post this SIV?'/>
-				        <button name='post_je_mater' type='object' string='WIP' states='new'
-                                class='oe_highlight' confirm='Are you sure you want to post WIP of this SIV?'/>
-                        <button name='production_move' type='object' string='Production Internal Trans' states='wip'
-                                class='oe_highlight' confirm='Are you sure you want to Production Internal Transfer for SIV ?'/>
 				        <field name="stage" widget="statusbar" statusbar_visible="new,wip,prod_trans,posted_expense" />
 				    </header>
 					<sheet>

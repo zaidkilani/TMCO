@@ -15,7 +15,7 @@
 
     'category': 'Uncategorized',
     'version': '12.0.1.0',
-    'depends': ['base','mail','contacts','sale','product','account','stock','account_accountant'],
+    'depends': ['base','mail','contacts','sale','product','account','stock','account_accountant','purchase'],
 
     'data': [
         'security/ir.model.access.csv',

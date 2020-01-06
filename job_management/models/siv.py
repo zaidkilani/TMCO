@@ -4,6 +4,21 @@ from odoo import models, fields, api
 from odoo.exceptions import UserError
 from odoo.exceptions import Warning
 
+
+class PurchaseOrder(models.Model):
+    _inherit='purchase.order.line'
+    
+    @api.onchange('product_id')
+    def update_price_unit(self):
+        for rec in self.filtered('product_id'):
+            pol_id = self.env['purchase.order.line'].search([('product_id','=',rec.product_id.id)],order='id desc', limit=1)
+            if pol_id:
+                rec.price_unit = pol_id.price_unit
+            else:
+                rec.standard_price = 0
+    
+    
+
 class JobSIV(models.Model):
     _name='job.siv'
     _inherit = ['mail.thread', 'mail.activity.mixin']
@@ -31,6 +46,8 @@ class JobSIV(models.Model):
     
     @api.multi
     def post_je(self):
+        self.post_je_mater()
+        self.production_move()
         """ Post SIV, and generate Jornal enteries"""
         for rec in self:
             if not rec.siv_job_id.analytic_account:
@@ -46,13 +63,11 @@ class JobSIV(models.Model):
                                                                              'debit': 0.0,
                                                                              'credit': line.amount,
                                                                              'account_id': line.account_id.id,
-                                                                             'analytic_account_id':rec.siv_job_id.analytic_account.id,
                                                                              'name':'Expense'}), 
                                                                              (0, 0, {
                                                                              'credit': 0.0,
                                                                              'debit':line.amount,
                                                                              'account_id': line.account_contra_id.id,
-                                                                             'analytic_account_id':rec.siv_job_id.analytic_account.id,
                                                                              'name':'Contra'})]})
                             rec.write({'state':'posted_expense', 'stage':'posted_expense'})
                         else: 
@@ -83,7 +98,6 @@ class JobSIV(models.Model):
                                                                                  'debit': 0.0,
                                                                                  'credit': line.amount,
                                                                                  'account_id': line.product_id.categ_id.property_stock_valuation_account_id.id,
-                                                                                 'analytic_account_id':rec.siv_job_id.analytic_account.id,
                                                                                  'name':'Stock Valuation'}), 
                                                                                  (0, 0, {
                                                                                  'credit': 0.0,
@@ -202,12 +216,28 @@ class SIVLine(models.Model):
 #     reserved=fields.Integer(compute='_compute_reserved')
 #     done=fields.Integer()
     currency_id = fields.Many2one('res.currency', string="Currency", related='product_id.currency_id')
-    standard_price=fields.Float(string='Rate', related='product_id.standard_price')
+    standard_price=fields.Float(string='Rate')
     amount=fields.Monetary(compute='_compute_amount')
     job_siv_id=fields.Many2one('job.siv')
     account_id=fields.Many2one('account.account', string='Expense Acct', related='product_id.categ_id.product_account_exp_siv_id')
     account_contra_id=fields.Many2one('account.account', string='Contra Acct', related='product_id.categ_id.product_account_contra_categ_id')
-
+    
+    @api.onchange('product_id')
+    def update_standard_price(self):
+        for rec in self.filtered('product_id'):
+            pol_id = self.env['purchase.order.line'].search([('product_id','=',rec.product_id.id)],order='id desc', limit=1)
+            if pol_id:
+                rec.standard_price = pol_id.price_unit
+            else:
+                rec.standard_price = 0
+        
+    @api.model_create_multi
+    @api.returns('self', lambda value: value.id)
+    def create(self, vals_list):
+        res = super(SIVLine, self).create(vals_list)
+        res.update_standard_price()
+        return res
+    
     @api.depends('initial_demand','standard_price')
     def _compute_amount(self):
         for rec in self:
