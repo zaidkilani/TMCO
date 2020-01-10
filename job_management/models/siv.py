@@ -102,7 +102,7 @@ class JobSIV(models.Model):
                                                                                  (0, 0, {
                                                                                  'credit': 0.0,
                                                                                  'debit':line.amount,
-                                                                                 'account_id': rec.account_id.id,
+                                                                                 'account_id': wip.account.account_id,
                                                                                  'analytic_account_id':rec.siv_job_id.analytic_account.id,
                                                                                  'name':'WIP'})]})
                                 rec.write({'state':'wip', 'stage':'wip'})
