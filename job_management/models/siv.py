@@ -29,7 +29,7 @@ class JobSIV(models.Model):
     siv_job_id=fields.Many2one('manage.job',string='Job No.')
     job_description=fields.Char(string='Job Description', related='siv_job_id.description')
     siv_line_ids=fields.One2many('siv.line', 'job_siv_id')
-    account_id=fields.Many2one('wip.account', string='WIP')
+    account_id=fields.Many2one('account.account', string='WIP')
     location_id=fields.Many2one('stock.location', string='Location', related='siv_job_id.location_pro_id')
     state = fields.Selection([('new', 'New'), ('wip', 'WIP'),('prod_trans', 'Production Transfer'),('posted_expense', 'Posted Expense')], default="new")
     stage = fields.Selection([('new', 'New'), ('wip', 'WIP'),('prod_trans', 'Production Transfer'),('posted_expense', 'Posted Expense')], default="new")
@@ -97,7 +97,7 @@ class JobSIV(models.Model):
                                                                          'line_ids': [(0, 0, {
                                                                                  'debit': 0.0,
                                                                                  'credit': line.amount,
-                                                                                 'account_id': line.product_id.categ_id.property_stock_valuation_account_id.id,
+                                                                                 'account_id': line.product_id.categ_id.property_stock_account_output_categ_id.id,
                                                                                  'name':'Stock Valuation'}), 
                                                                                  (0, 0, {
                                                                                  'credit': 0.0,
@@ -219,24 +219,14 @@ class SIVLine(models.Model):
     standard_price=fields.Float(string='Rate')
     amount=fields.Monetary(compute='_compute_amount')
     job_siv_id=fields.Many2one('job.siv')
-    account_id=fields.Many2one('account.account', string='Expense Acct', related='product_id.categ_id.product_account_exp_siv_id')
+    account_id=fields.Many2one('account.account', string='Expense Acct')
     account_contra_id=fields.Many2one('account.account', string='Contra Acct', related='product_id.categ_id.product_account_contra_categ_id')
     
     @api.onchange('product_id')
     def update_standard_price(self):
         for rec in self.filtered('product_id'):
-            pol_id = self.env['purchase.order.line'].search([('product_id','=',rec.product_id.id)],order='id desc', limit=1)
-            if pol_id:
-                rec.standard_price = pol_id.price_unit
-            else:
-                rec.standard_price = 0
+            rec.standard_price = rec.product_id.standard_price
         
-    @api.model_create_multi
-    @api.returns('self', lambda value: value.id)
-    def create(self, vals_list):
-        res = super(SIVLine, self).create(vals_list)
-        res.update_standard_price()
-        return res
     
     @api.depends('initial_demand','standard_price')
     def _compute_amount(self):

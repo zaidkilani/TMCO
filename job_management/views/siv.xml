@@ -65,7 +65,7 @@
                                 <field name="currency_id" 
                                     options="{'no_create_edit': True, 'no_create': True, 'no_open': True}"/>
                                 <field name="standard_price" widget="monetary"/>
-                                <field name="amount" />
+                                <field name="amount" sum="Total Amount" />
                             </tree>
                         </field>
                         </page>
@@ -98,9 +98,9 @@
 			<field name="view_mode">tree,form</field>
 		</record>
 		  
-        <menuitem id="menu_inventory_top_bar_label" name="Inventory" parent="menu_job_management" sequence="2"/>
+        <menuitem id="menu_inventory_top_bar_label" name="Operations" parent="menu_job_management" sequence="2"/>
         <menuitem id="menu_siv" action="siv_action" parent="menu_inventory_top_bar_label" sequence="1"/>
-        <menuitem id="menu_stock_picking" name="Store Receipt Voucher" action="stock.stock_picking_type_action" parent="menu_inventory_top_bar_label" sequence="2"/>
+        <menuitem id="menu_stock_picking" name="Store Receipt Voucher" action="account.action_vendor_bill_template" parent="menu_inventory_top_bar_label" sequence="2"/>
         <menuitem id="menu_Internal_transfer" name="Internal Transfer" action="stock.action_picking_tree_all" parent="menu_inventory_top_bar_label" sequence="3"/>
 
 

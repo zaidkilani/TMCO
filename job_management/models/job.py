@@ -16,6 +16,22 @@ class ManageJob(models.Model):
     analytic_account = fields.Many2one('account.analytic.account', string='Analytical Account')
     location_pro_id=fields.Many2one('stock.location', string='Production Location')
     state = fields.Selection([('new', 'New'), ('running', 'Running'),('onhold', 'On Hold'),('closed', 'Closed')], default="new")
+    total = fields.Float('Total', compute='_compute_toatl')
+    
+    
+    def location_open_quants(self):
+        action = self.env.ref('stock.location_open_quants').read()[0]
+        action['domain'] = [('location_id', 'child_of', self.location_pro_id.ids)]
+        return action
+    
+    def open_siv_view(self):
+        action = self.env.ref('job_management.siv_action').read()[0]
+        action['domain'] = [('siv_job_id','=',self.id)]
+        return action
+    
+    def _compute_toatl(self):
+        for rec in self:
+            rec.total = sum(rec.mapped('analytic_account.line_ids.amount'))
 
     @api.multi
     def running(self):

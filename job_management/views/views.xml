@@ -18,46 +18,11 @@
             </field>
         </record>
         
-        <record model="ir.ui.view" id="view_wip_account_tree">
-            <field name="name">WIP Account</field>
-            <field name="model">wip.account</field>
-            <field name="arch" type="xml">
-                <tree>
-                    <field name="name" />
-                    <field name="account_id" />
-                </tree>
-            </field>
-
-        </record>
 
 
-        <record model="ir.ui.view" id="view_wip_account_form">
-            <field name="name">WIP Account</field>
-            <field name="model">wip.account</field>
-            <field name="arch" type="xml">
-                <form>
-                    <sheet>
-                        <group>
-                            <group>
-                                <field name="name" />
-                                <field name="account_id" 
-                                options="{'no_create_edit': True, 'no_create': True, 'no_open': True}"/>
-                            </group>
-                        </group>
-                    </sheet>
-                </form>
-            </field>
-        </record>
 
 
-        <record id="wip_account_action" model="ir.actions.act_window">
-            <field name="name">WIP Account</field>
-            <field name="res_model">wip.account</field>
-            <field name="view_type">form</field>
-            <field name="view_mode">tree,form</field>
-        </record>
         
-        <!-- wip account end here -->
         
         <record model="ir.ui.view" id="view_journal_siv_tree">
             <field name="name">Journal SIV</field>
@@ -100,7 +65,6 @@
         
         <menuitem id="menu_config_top_bar_label" name="Configuration" parent="menu_job_management" sequence="3"/>
         <menuitem id="menu_account_config" name="Account" parent="menu_config_top_bar_label" sequence="1"/>
-        <menuitem id="menu_wip_account" name="WIP Account" action="wip_account_action" parent="menu_account_config" sequence="1"/>
         <menuitem id="menu_journal_siv" name="Journal SIV" action="journal_siv_action" parent="menu_account_config" sequence="2"/>
 
     </data>

@@ -15,6 +15,7 @@
 					<field name="sale_order_id" />
 					<field name="analytic_account" />
 					<field name='location_pro_id'/>
+					<field name='total'/>
 				</tree>
 			</field>
 
@@ -41,6 +42,11 @@
 			 />
                  </header>
 					<sheet>
+					<div class="oe_button_box">
+                            <button name="open_siv_view" class="oe_stat_button" icon="fa-bars" type="object" string="SIV">
+                            </button>
+                            <button string="Current Stock" class="oe_stat_button" icon="fa-building-o" name="location_open_quants" type="object"/>
+                    </div>
 						<group>
 							<group>
 								<field name="name" />
@@ -52,6 +58,7 @@
 								<field name="start_date" />
 								<field name="delivery_date" />
 								<field name="analytic_account" readonly="1"/>
+								<field name='total'/>
 								<field name='location_pro_id' readonly='1'/>
 							</group>
 						</group>

@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+
+	<record id="account.action_vendor_bill_template" model="ir.actions.act_window">
+            <field name="name">Stock Receive Voucher</field>
+        </record> 
+
+	<record id="account.menu_action_invoice_tree2"   model="ir.ui.menu" >
+            <field name="name">SRV</field>
+        </record>
   <record model="ir.ui.view" id="product_template_only_form_view">
             <field name="name">product.template</field>
             <field name="model">product.template</field>
@@ -28,6 +36,20 @@
             </field>
         </record>
         
+  <record model="ir.ui.view" id="view_stock_product_tree2">
+            <field name="name">product.product</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="stock_account.view_stock_product_tree2" />
+            <field name="arch" type="xml">
+
+                <xpath
+                    expr="//field[@name='uom_id']"
+                    position="after">
+                       <field name="standard_price" sum="Total Cost"/>
+                </xpath>
+            </field>
+        </record>
+        
   <record model="ir.ui.view" id="view_inventory_valuation_search">
             <field name="name">product.product</field>
             <field name="model">product.product</field>
@@ -41,6 +63,18 @@
                 </xpath>
             </field>
         </record>
+        
+  <record model="ir.ui.view" id="invoice_supplier_form">
+            <field name="name">account.invoice</field>
+            <field name="model">account.invoice</field>
+            <field name="inherit_id" ref="account.invoice_supplier_form" />
+            <field name="arch" type="xml">
+
+                <xpath expr="//span[hasclass('o_form_label')][4]" position="replace">
+                        <span class="o_form_label" attrs="{'invisible': ['|',('state', '=', 'draft'), ('type','!=','in_invoice')]}">SRV </span>
+                </xpath>
+            </field>
+        </record>
 	
 	<record id="stock.quantsact"
 		model="ir.actions.act_window">
@@ -51,4 +85,22 @@
 		model="ir.actions.act_window">
 		<field name="context">{ 'search_default_categ':1,'company_owned': True, 'create': False, 'edit' :False}</field>
 	</record>
+	
+	
+	
+	<template id="report_invoice_document" inherit_id="account.report_invoice_document">
+	
+		<xpath expr="//div[hasclass('page')]//h2[1]" position="replace">
+                        <h2>
+                        <span t-if="o.type == 'out_invoice' and o.state in ('open', 'in_payment', 'paid')">Invoice</span>
+                        <span t-if="o.type == 'out_invoice' and o.state == 'draft'">Draft Invoice</span>
+                        <span t-if="o.type == 'out_invoice' and o.state == 'cancel'">Cancelled Invoice</span>
+                        <span t-if="o.type == 'out_refund'">Credit Note</span>
+                        <span t-if="o.type == 'in_refund'">Vendor Credit Note</span>
+                        <span t-if="o.type == 'in_invoice'">Stock Issue Voucher </span>
+                        <span t-field="o.number"/>
+                    </h2>
+                </xpath>
+	
+	</template>
 </odoo>

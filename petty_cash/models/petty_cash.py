@@ -98,7 +98,7 @@ class PettyCash(models.Model):
         lines = []
         cost = 0
         for line in self.petty_cash_line_ids:
-            lines.append((0,0,{'account_id':line.product_id.property_account_expense_id.id,
+            lines.append((0,0,{'account_id':line.account_id.id,
                                   'debit':line.cost,
                                   'analytic_account_id':line.analytic_account.id}))
             cost+=line.cost
@@ -141,7 +141,7 @@ class PettyCashLine(models.Model):
     _name='petty.cash.line'
     _description='Petty Cash Line Model'
     
-    product_id = fields.Many2one('product.product', required=True)
+    account_id = fields.Many2one('account.account', required=True)
     petty_cash_id=fields.Many2one('petty.cash')
     analytic_account = fields.Many2one('account.analytic.account', string='Analytical Account')
     attachement_ids = fields.Many2many('ir.attachment', string="Attachment Doc")
@@ -150,6 +150,7 @@ class PettyCashLine(models.Model):
     allowed_expenses_ids_com=fields.Many2many('petty.cash.type', related='petty_cash_id.allowed_expenses')
     cost=fields.Monetary()
     bill_no=fields.Char('Bill No.')
+    description=fields.Char('Disc.')
     vendor_name=fields.Char('Vendor Name')
     currency_id = fields.Many2one('res.currency', string="Currency", related='petty_cash_id.currency_id')
 

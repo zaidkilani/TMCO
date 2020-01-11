@@ -40,7 +40,7 @@
 							<thead>
 								<tr>
 									<th>Sr No.</th>
-									<th>Code</th>
+									<th>Bill No</th>
 									<th>Name</th>
 									<th>Job</th>
 									<th class="text-right">Amount</th>
@@ -50,8 +50,8 @@
 								<t t-set="i" t-value="1" />
 								<tr t-foreach="o.petty_cash_line_ids" t-as="oo">
 									<td t-esc="i" />
-									<td  ><span t-field="oo.product_id.default_code"/></td>
-									<td  ><span t-field="oo.product_id"/></td>
+									<td  ><span t-field="oo.bill_no"/></td>
+									<td  ><span t-field="oo.description"/></td>
 									<td  ><span t-field="oo.analytic_account"/></td>
 									<td  class="text-right"><span t-field="oo.cost"/></td>
 									<t t-set="i" t-value="i+1" />
