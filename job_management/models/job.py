@@ -13,6 +13,7 @@ class ManageJob(models.Model):
     start_date = fields.Date(string='Start Date', default=fields.date.today())
     delivery_date = fields.Date(string='Delivery Date')
     sale_order_id=fields.Many2one('sale.order', string='Sale Order No.')
+    partner_id=fields.Many2one('res.partner', string='Customer',related='sale_order_id.partner_id')
     analytic_account = fields.Many2one('account.analytic.account', string='Analytical Account')
     location_pro_id=fields.Many2one('stock.location', string='Production Location')
     state = fields.Selection([('new', 'New'), ('running', 'Running'),('onhold', 'On Hold'),('closed', 'Closed')], default="new")
@@ -23,6 +24,13 @@ class ManageJob(models.Model):
         action = self.env.ref('stock.location_open_quants').read()[0]
         action['domain'] = [('location_id', 'child_of', self.location_pro_id.ids)]
         return action
+    
+    def open_account_analytic_line(self):
+        action = self.env.ref('analytic.account_analytic_line_action').read()[0]
+        action['domain'] = [('account_id','=', self.analytic_account.id)]
+        action['context'] = {}
+        return action
+    
     
     def open_siv_view(self):
         action = self.env.ref('job_management.siv_action').read()[0]

@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<data>
+
+
+		<template id="journal_report_report">
+			<t t-call="web.html_container">
+				<t t-foreach="docs" t-as="doc">
+					<t t-call="web.external_layout">
+						<div class="page">
+						<h1>Journal Voucher</h1>
+							<div class="row mt32 mb32" id="informations">
+								<div class="col-auto mw-100 mb-2">
+									<strong>Journal Number:</strong>
+									<p class="m-0" t-field="doc.name" />
+								</div>
+								<div class="col-auto mw-100 mb-2">
+									<strong>Date:</strong>
+									<p class="m-0" t-field="doc.date" />
+								</div>
+								<div class="col-auto mw-100 mb-2">
+									<strong>Description:</strong>
+									<p class="m-0" t-field="doc.ref" />
+								</div>
+								<div class="col-auto mw-100 mb-2">
+									<strong>Journal:</strong>
+									<p class="m-0" t-field="doc.journal_id.name" />
+								</div>
+
+							</div>
+
+
+							<table class="table table-sm o_main_table">
+								<thead>
+									<tr>
+										<th>Account</th>
+										<th>Partner</th>
+										<th>Description</th>
+										<th class="text-right">Debit</th>
+										<th class="text-right">Credit</th>
+									</tr>
+								</thead>
+								<tbody class="sale_tbody">
+
+									<t t-set="total" t-value="0"/>
+									<t t-foreach="doc.line_ids" t-as="line">
+
+
+										<tr>
+											<td >
+												<span t-field="line.account_id.display_name" />
+											</td>
+											<td >
+												<span t-field="line.partner_id.name" />
+											</td>
+											<td >
+												<span t-field="line.name" />
+											</td>
+											<td class="text-right">
+												<span t-field="line.debit" />
+											</td>
+											<td class="text-right">
+												<span t-field="line.credit" />
+											</td>
+											
+										</tr>
+
+
+									</t>
+									<tr>
+											<td >
+											</td>
+											<td >
+											</td>
+											<td >
+											</td>
+											<td class="text-right">
+											Total
+											</td>
+											<td class="text-right">
+											<span t-esc="doc.currency_id.amount_to_text(doc.amount)" />
+											</td>
+											
+										</tr>
+								</tbody>
+							</table><div class="row mt32 mb32">
+								<div class="col-6">
+									<h5>Entered By</h5>
+								</div>
+								<div class="col-6">
+									<h5>Approved By</h5>
+								</div>
+								</div>
+							
+							
+						</div>
+
+
+					</t>
+
+				</t>
+			</t>
+		</template>
+
+
+		<report id="action_report_journal" string="Journal Report"
+			model="account.move" report_type="qweb-pdf"
+			file="am_report.journal_report_report"
+			name="am_report.journal_report_report"
+			print_report_name="'journal Report'" />
+
+
+	</data>
+</odoo>

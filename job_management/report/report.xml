@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+ <report
+            id="siv_report_id"
+            model="job.siv"
+            string="Stock Issue Voucher"
+            report_type="qweb-pdf"
+            name="job_management.siv_template"
+            file="job_management.siv_template"
+            />
+
+
+	<template id="siv_template">
+		<t t-call="web.html_container">
+			<t t-foreach="docs" t-as="o">
+				<t t-call="web.external_layout">
+					<div class="page">
+						<h2 class="text-center">Stock Issue Voucher</h2>
+						<div class="row mt64">
+							<div class="col-3">
+								<strong>Job No:</strong>
+								<span t-field="o.siv_job_id" />
+							</div>
+							<div class="col-3">
+								<strong>Job Name:</strong>
+								<p t-field="o.siv_job_id.description" />
+							</div>
+							<div class="col-3">
+								<strong>SIV No:</strong>
+								<p t-field="o.name" />
+							</div>
+							<div class="col-3">
+								<strong>Date:</strong>
+								<p t-field="o.date" />
+							</div>
+						</div>
+
+						<table border="1"
+							class="mt32 table table-bordered oe_import_grid bg-white">
+							<thead>
+								<tr>
+									<th>Sr No.</th>
+									<th>Code</th>
+									<th>Description</th>
+									<th>Quanity</th>
+									<th class="text-right">Rate</th>
+									<th class="text-right">Amount</th>
+								</tr>
+							</thead>
+							<tbody>
+								<t t-set="i" t-value="1" />
+								<t t-set="total" t-value="0" />
+								<tr t-foreach="o.siv_line_ids" t-as="oo">
+								<t t-set="total" t-value="total + oo.amount" />
+									<td t-esc="i" />
+									<td  ><span t-field="oo.product_id.default_code"/></td>
+									<td  ><span t-field="oo.product_inte_ref"/></td>
+									<td  ><span t-field="oo.initial_demand"/></td>
+									<td  class="text-right"><span t-field="oo.standard_price"/></td>
+									<td  class="text-right"><span t-field="oo.amount"/></td>
+									<t t-set="i" t-value="i+1" />
+								</tr>
+								<tr>
+									<td />
+									<td />
+									<td />
+									<td />
+									<td />
+									<td  class="text-right"><span t-esc="total"/></td>
+								</tr>
+							</tbody>
+						</table>
+						<span>Value </span><span t-esc="res_company.currency_id.amount_to_text(total)"/>
+						<div class="row mt128">
+							<div class="col-4">
+								<span>Store Keeper</span>
+							</div>
+							<div class="col-4">
+							<span>Foreman</span>
+							</div>
+							<div class="col-4">
+								<span>Production Manager</span>
+							</div>
+						</div>
+
+					</div>
+				</t>
+			</t>
+		</t>
+	</template>
+</odoo>

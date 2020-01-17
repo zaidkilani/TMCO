@@ -22,6 +22,7 @@
         'views/job.xml',
         'views/siv.xml',
         'views/views.xml',
+        'report/report.xml',
 #        'views/custoemr_class_view.xml',
 # #        'report/sale_report.xml',
 #        'views/customs_declaration_view.xml',

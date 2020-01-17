@@ -4,10 +4,51 @@
 	<record id="account.action_vendor_bill_template" model="ir.actions.act_window">
             <field name="name">Stock Receive Voucher</field>
         </record> 
+        
+        <record id="account.account_invoices" model="ir.actions.report">
+            <field name="name">Voucher</field>
+        </record> 
+        <record id="account.account_invoices_without_payment" model="ir.actions.report">
+            <field name="name">Voucher without Payment</field>
+        </record> 
 
 	<record id="account.menu_action_invoice_tree2"   model="ir.ui.menu" >
             <field name="name">SRV</field>
         </record>
+        
+        
+  <record model="ir.ui.view" id="view_move_form">
+            <field name="name">account.move</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_move_form" />
+            <field name="arch" type="xml">
+
+                <xpath
+                    expr="//field[@name='line_ids']"
+                    position="attributes">
+                        <attribute name="context">{'line_ids': line_ids, 'journal_id': journal_id,'default_name': ref }</attribute>
+                </xpath>
+            </field>
+        </record>
+        
+        
+        
+  <record model="ir.ui.view" id="view_stock_quant_tree">
+            <field name="name">stock.quant</field>
+            <field name="model">stock.quant</field>
+            <field name="inherit_id" ref="stock.view_stock_quant_tree" />
+            <field name="arch" type="xml">
+
+                <xpath
+                    expr="//field[@name='quantity']"
+                    position="after">
+                       <field name="cost"/>
+                       <field name="total_cost"/>
+                       
+                </xpath>
+            </field>
+        </record>
+        
   <record model="ir.ui.view" id="product_template_only_form_view">
             <field name="name">product.template</field>
             <field name="model">product.template</field>
@@ -64,6 +105,20 @@
             </field>
         </record>
         
+  <record model="ir.ui.view" id="invoice_supplier_tree">
+            <field name="name">account.invoice</field>
+            <field name="model">account.invoice</field>
+            <field name="inherit_id" ref="account.invoice_supplier_tree" />
+            <field name="arch" type="xml">
+
+                <xpath
+                    expr="//field[@name='date_invoice']"
+                    position="attributes">
+                        <attribute name="string">Voucher Date</attribute>
+                </xpath>
+            </field>
+        </record>
+        
   <record model="ir.ui.view" id="invoice_supplier_form">
             <field name="name">account.invoice</field>
             <field name="model">account.invoice</field>
@@ -72,6 +127,11 @@
 
                 <xpath expr="//span[hasclass('o_form_label')][4]" position="replace">
                         <span class="o_form_label" attrs="{'invisible': ['|',('state', '=', 'draft'), ('type','!=','in_invoice')]}">SRV </span>
+                </xpath>
+                <xpath
+                    expr="//field[@name='date_invoice']"
+                    position="attributes">
+                        <attribute name="string">Voucher Date</attribute>
                 </xpath>
             </field>
         </record>
@@ -89,7 +149,33 @@
 	
 	
 	<template id="report_invoice_document" inherit_id="account.report_invoice_document">
-	
+		<xpath expr="//table[@name='invoice_line_table']" position="after">
+			<span>Value: </span><span t-esc="o.currency_id.amount_to_text(o.amount_total)"/>
+		</xpath>
+		<xpath expr="//p[@name='comment']//span" position="before">
+		<span>Remark: </span>
+		</xpath>
+		
+		<xpath expr="//div[hasclass('page')]" position="inside">
+		<div class="row mt128">
+							<div class="col-3">
+								<span>Materials Manager: </span>
+							</div>
+							<div class="col-3">
+								<span>Store Keeper:</span>
+							</div>
+							<div class="col-3">
+								<span>QC. Inspection:</span>
+								<br/>
+								<span>Accept:</span>
+								<br/>
+								<span>Reject:</span>
+							</div>
+							<div class="col-3">
+							<span>Accountant</span>
+							</div>
+						</div>
+		</xpath>
 		<xpath expr="//div[hasclass('page')]//h2[1]" position="replace">
                         <h2>
                         <span t-if="o.type == 'out_invoice' and o.state in ('open', 'in_payment', 'paid')">Invoice</span>
@@ -97,10 +183,103 @@
                         <span t-if="o.type == 'out_invoice' and o.state == 'cancel'">Cancelled Invoice</span>
                         <span t-if="o.type == 'out_refund'">Credit Note</span>
                         <span t-if="o.type == 'in_refund'">Vendor Credit Note</span>
-                        <span t-if="o.type == 'in_invoice'">Stock Issue Voucher </span>
+                        <span t-if="o.type == 'in_invoice'">Stock Receipt Voucher </span>
                         <span t-field="o.number"/>
                     </h2>
                 </xpath>
+	
+	</template>
+	
+	
+	
+	<template id="report_purchasequotation_document" inherit_id="purchase.report_purchasequotation_document">
+	
+		<xpath expr="//p[@t-field='o.notes']" position="before">
+		<p>Reason For Purchase</p>
+                </xpath>
+	
+		<xpath expr="//div[hasclass('page')]/div[1]" position="after">
+		<div id="informations" class="row mt32 mb32">
+			<div t-if="o.payment_term_id" class="col-3 bm-2">
+                    <strong>Payment Term:</strong>
+                    <p t-field="o.payment_term_id" class="m-0"/>
+                </div>
+               <div t-if="o.incoterm_id" class="col-3 bm-2">
+                    <strong>Incoterm:</strong>
+                    <p t-field="o.incoterm_id" class="m-0"/>
+                </div> </div>
+         </xpath>
+	
+	</template>
+	
+	
+	
+	<template id="report_payment_receipt_document" inherit_id="account.report_payment_receipt_document">
+	
+		<xpath expr="//div[hasclass('page')]//div[hasclass('row')][2]//div[1]//t[2]//strong" position="replace">
+			<strong>WITH PLEASURE PAID TO: </strong>
+         </xpath>
+         <xpath expr="//div[hasclass('page')]//div[hasclass('row')][2]//div[2]//strong" position="replace">
+			<strong>Through: </strong>
+         </xpath>
+         <xpath expr="//div[hasclass('page')]//div[hasclass('row')][3]//div[2]//strong" position="replace">
+			<strong>Being: </strong>
+         </xpath>
+         <xpath expr="//div[hasclass('page')]" position="inside">
+			<span>Value: </span><span t-esc="o.currency_id.amount_to_text(o.amount)"/>
+			<br/>
+			<div class="row mt128">
+							<div class="col-6">
+								<span>Accountant</span>
+							</div>
+							<div class="col-6">
+								<span>Receiver's Sign</span>
+							</div>
+						</div>
+         </xpath>
+         </template>
+	
+	
+	<template id="report_purchaseorder_document" inherit_id="purchase.report_purchaseorder_document">
+	
+		<xpath expr="//p[@t-field='o.notes']" position="before">
+			<p>Reason For Purchase</p>
+         </xpath>
+	
+	<xpath expr="//p[@t-field='o.notes']" position="after">
+			<div class="row mt128">
+							<div class="col-3">
+								<span>Head Of Materials</span>
+							</div>
+							<div class="col-1">
+							<span>Date</span>
+							</div>
+							<div class="col-3">
+								<span>Technical Manager</span>
+							</div>
+							<div class="col-1">
+							<span>Date</span>
+							</div>
+							<div class="col-3">
+								<span>Executive Manager</span>
+							</div>
+							<div class="col-1">
+							<span>Date</span>
+							</div>
+						</div>
+         </xpath>
+         
+         
+		<xpath expr="//div[@id='informations']" position="inside">
+			<div t-if="o.payment_term_id" class="col-3 bm-2">
+                    <strong>Payment Term:</strong>
+                    <p t-field="o.payment_term_id" class="m-0"/>
+                </div>
+               <div t-if="o.incoterm_id" class="col-3 bm-2">
+                    <strong>Incoterm:</strong>
+                    <p t-field="o.incoterm_id" class="m-0"/>
+                </div>
+         </xpath>
 	
 	</template>
 </odoo>
