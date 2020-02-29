@@ -8,7 +8,7 @@
 				<t t-foreach="docs" t-as="doc">
 					<t t-call="web.external_layout">
 						<div class="page">
-						<h1>Journal Voucher</h1>
+						<h1 t-field="doc.journal_id.name"/>
 							<div class="row mt32 mb32" id="informations">
 								<div class="col-auto mw-100 mb-2">
 									<strong>Journal Number:</strong>
@@ -21,10 +21,6 @@
 								<div class="col-auto mw-100 mb-2">
 									<strong>Description:</strong>
 									<p class="m-0" t-field="doc.ref" />
-								</div>
-								<div class="col-auto mw-100 mb-2">
-									<strong>Journal:</strong>
-									<p class="m-0" t-field="doc.journal_id.name" />
 								</div>
 
 							</div>
