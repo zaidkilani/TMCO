@@ -35,6 +35,7 @@ class ManageJob(models.Model):
     def open_siv_view(self):
         action = self.env.ref('job_management.siv_action').read()[0]
         action['domain'] = [('siv_job_id','=',self.id)]
+        action['context'] = {'default_siv_job_id':self.id}
         return action
     
     @api.depends('analytic_account','analytic_account.line_ids','analytic_account.line_ids.amount')

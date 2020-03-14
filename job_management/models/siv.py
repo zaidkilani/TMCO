@@ -145,7 +145,7 @@ class JobSIV(models.Model):
                                                'location_id':rec.stock_picking_type_id.default_location_src_id.id,
                                                'location_dest_id':rec.stock_picking_type_id.default_location_dest_id.id,
                                                'procure_method':'make_to_stock',
-                                               'product_uom':uom_obj.id
+                                               'product_uom':l.uom_id.id
                                                }])
             stock_pick_obj.create({'location_id':rec.stock_picking_type_id.default_location_src_id.id,
                                    'location_dest_id':rec.stock_picking_type_id.default_location_dest_id.id,
@@ -171,7 +171,7 @@ class JobSIV(models.Model):
                                                'location_id':rec.stock_picking_type_id.default_location_dest_id.id,
                                                'location_dest_id':rec.location_id.id,
                                                'procure_method':'make_to_stock',
-                                               'product_uom':uom_obj.id
+                                               'product_uom':l.uom_id.id
                                                }])
             stock_pick_obj.create({'location_id':rec.stock_picking_type_id.default_location_dest_id.id,
                                    'location_dest_id':rec.location_id.id,
@@ -221,7 +221,7 @@ class SIVLine(models.Model):
     job_siv_id=fields.Many2one('job.siv')
     account_id=fields.Many2one('account.account', string='Expense Acct', related='product_id.categ_id.product_account_exp_siv_id')
     account_contra_id=fields.Many2one('account.account', string='Contra Acct', related='product_id.categ_id.product_account_contra_categ_id')
-    
+    uom_id =fields.Many2one('uom.uom')
     @api.onchange('product_id')
     def update_standard_price(self):
         for rec in self.filtered('product_id'):
