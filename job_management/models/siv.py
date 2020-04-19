@@ -221,7 +221,7 @@ class SIVLine(models.Model):
     job_siv_id=fields.Many2one('job.siv')
     account_id=fields.Many2one('account.account', string='Expense Acct', related='product_id.categ_id.product_account_exp_siv_id')
     account_contra_id=fields.Many2one('account.account', string='Contra Acct', related='product_id.categ_id.product_account_contra_categ_id')
-    uom_id =fields.Many2one('uom.uom')
+    uom_id =fields.Many2one('uom.uom', string='	Unit of Measure', related='product_id.uom_id.name')
     @api.onchange('product_id')
     def update_standard_price(self):
         for rec in self.filtered('product_id'):
