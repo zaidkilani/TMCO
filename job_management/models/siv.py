@@ -136,7 +136,7 @@ class JobSIV(models.Model):
 #                                   'siv_id':rec.id})
 #             proc_group_search_obj=self.env['procurement.group'].search([('siv_id','=',rec.id)],limit=1)
 #             print('===================================group id:::::',proc_group_search_obj.name)
-            uom_obj=self.env['uom.uom'].search([('name','=','Unit(s)')],limit=1)
+            uom_obj=self.env['uom.uom'].search([('name','=','')],limit=1)
             list_of_materials=[]
             for l in rec.siv_line_ids:
                 list_of_materials.append([0,0,{'product_id':l.product_id.id,
@@ -145,7 +145,7 @@ class JobSIV(models.Model):
                                                'location_id':rec.stock_picking_type_id.default_location_src_id.id,
                                                'location_dest_id':rec.stock_picking_type_id.default_location_dest_id.id,
                                                'procure_method':'make_to_stock',
-                                               'product_uom':l.uom_id.id
+                                               'product_uom':l.uom_id.name
                                                }])
             stock_pick_obj.create({'location_id':rec.stock_picking_type_id.default_location_src_id.id,
                                    'location_dest_id':rec.stock_picking_type_id.default_location_dest_id.id,
@@ -171,7 +171,7 @@ class JobSIV(models.Model):
                                                'location_id':rec.stock_picking_type_id.default_location_dest_id.id,
                                                'location_dest_id':rec.location_id.id,
                                                'procure_method':'make_to_stock',
-                                               'product_uom':l.uom_id.id
+                                               'product_uom':l.uom_id.name
                                                }])
             stock_pick_obj.create({'location_id':rec.stock_picking_type_id.default_location_dest_id.id,
                                    'location_dest_id':rec.location_id.id,
